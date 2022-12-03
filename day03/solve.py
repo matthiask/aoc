@@ -5,6 +5,7 @@ priorities = {
     for index, thing in enumerate(string.ascii_lowercase + string.ascii_uppercase)
 }
 
+
 def read():
     with open("input.txt") as f:
         for line in f:

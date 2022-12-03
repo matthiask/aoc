@@ -20,5 +20,6 @@ def main():
 
     print(sum(sorted(carrying, reverse=True)[:3]))
 
+
 if __name__ == "__main__":
     main()

@@ -8,8 +8,8 @@ choice_scores = {
     "A": 1,
     "B": 2,
     "C": 3,
-    "X": 1, 
-    "Y": 2, 
+    "X": 1,
+    "Y": 2,
     "Z": 3,
 }
 round_scores = {
@@ -40,11 +40,29 @@ def score_round_for_player_2(round):
 
 def score_round_for_player_2_round_2(round):
     if round[1] == "X":  # lose
-        piece = next((pair[1] for pair, score in round_scores.items() if score == 0 and pair[0] == round[0]))
+        piece = next(
+            (
+                pair[1]
+                for pair, score in round_scores.items()
+                if score == 0 and pair[0] == round[0]
+            )
+        )
     elif round[1] == "Y":  # draw
-        piece = next((pair[1] for pair, score in round_scores.items() if score == 3 and pair[0] == round[0]))
+        piece = next(
+            (
+                pair[1]
+                for pair, score in round_scores.items()
+                if score == 3 and pair[0] == round[0]
+            )
+        )
     elif round[1] == "Z":  # win
-        piece = next((pair[1] for pair, score in round_scores.items() if score == 6 and pair[0] == round[0]))
+        piece = next(
+            (
+                pair[1]
+                for pair, score in round_scores.items()
+                if score == 6 and pair[0] == round[0]
+            )
+        )
 
     return choice_scores[piece] + round_scores[(round[0], piece)]
 
