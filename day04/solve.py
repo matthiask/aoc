@@ -1,7 +1,3 @@
-from dataclasses import dataclass
-from pprint import pprint
-
-
 def range_to_set(s):
     start, end = tuple(map(int, s.split("-")))
     return set(range(start, end + 1))
@@ -10,8 +6,6 @@ def range_to_set(s):
 def parse():
     with open("input.txt") as f:
         for line in f:
-            pairing = line.strip().split(",")
-
             yield tuple(map(range_to_set, line.strip().split(",")))
 
 
