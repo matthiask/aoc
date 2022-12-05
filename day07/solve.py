@@ -5,6 +5,7 @@ from collections import defaultdict
 folder_sizes = defaultdict(int)
 cumulative_folder_sizes = defaultdict(int)
 
+
 def parse(lines):
     cwd = []
     for line in lines:
@@ -18,7 +19,7 @@ def parse(lines):
             pass
         elif line.startswith("dir "):
             pass
-        elif (match := re.match(r"^([0-9]+) (.*)$", line)):
+        elif match := re.match(r"^([0-9]+) (.*)$", line):
             fsize = int(match.groups()[0])
             folder_sizes["/".join(cwd)] += fsize
 
@@ -29,7 +30,15 @@ def parse(lines):
 
 
 def part1():
-    return sum(size for folder, size in cumulative_folder_sizes.items() if size <= 100000)
+    return sum(
+        size for folder, size in cumulative_folder_sizes.items() if size <= 100000
+    )
+
+
+def part2():
+    min_delete = 8381165
+    by_size = sorted(cumulative_folder_sizes.items(), key=lambda row: row[1])
+    return next(size for folder, size in by_size if size >= min_delete)
 
 
 if __name__ == "__main__":
@@ -45,3 +54,4 @@ if __name__ == "__main__":
     pprint(cumulative_folder_sizes)
 
     print(part1())
+    print(part2())
