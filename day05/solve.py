@@ -43,24 +43,32 @@ def move_one(stacks, from_, to_):
     stacks[to_].insert(UPPERMOST, stacks[from_].pop(UPPERMOST))
 
 
+def concat_uppermost(stacks):
+    return "".join(stack[UPPERMOST] for stack in stacks)
+
+
 def part1():
     stacks, ops = parse()
     for op in ops:
         for _i in range(op.count):
             move_one(stacks, op.from_, op.to_)
-    print("".join(stack[UPPERMOST] for stack in stacks))
+    return concat_uppermost(stacks)
+
+
+def move_several(stacks, op):
+    from_ = stacks[op.from_]
+    moving, stacks[op.from_] = from_[:op.count], from_[op.count:]
+    stacks[op.to_][UPPERMOST:UPPERMOST] = moving
 
 
 def part2():
     stacks, ops = parse()
     for op in ops:
-        from_ = stacks[op.from_]
-        moving, stacks[op.from_] = from_[:op.count], from_[op.count:]
-        stacks[op.to_][UPPERMOST:UPPERMOST] = moving
-    print("".join(stack[UPPERMOST] for stack in stacks))
+        move_several(stacks, op)
+    return concat_uppermost(stacks)
 
 
 if __name__ == "__main__":
     # pprint(parse())
-    part1()
-    part2()
+    print(part1())
+    print(part2())
