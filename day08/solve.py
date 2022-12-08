@@ -51,11 +51,11 @@ def part1(forest):
 
 
 def visibility(forest, x_iterable, y_iterable):
-    xi = iter(x_iterable)
-    yi = iter(y_iterable)
-    starting_height = forest[next(yi)][next(xi)]
+    xy = zip(x_iterable, y_iterable)
+    x, y = next(xy)
+    starting_height = forest[y][x]
     visibility = 0
-    for x, y in zip(xi, yi):
+    for x, y in xy:
         visibility += 1
         if forest[y][x] >= starting_height:
             break
