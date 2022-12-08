@@ -86,18 +86,25 @@ def _apply_move(pos, delta):
     return (pos[0] + delta[0], pos[1] + delta[1])
 
 
-def part1(head_moves):
-    head = (0, 0)
-    tail = (0, 0)
-    tail_visited = {tail}
+def part1(head_moves, count=2):
+    knots = [(0, 0) for _i in range(count)]
+    tail_visited = {knots[-1]}
     for head_move in head_moves:
         for _i in range(head_move.count):
-            head = _apply_move(head, head_move.delta)
-            tail = _apply_move(tail, _tail_move(head, tail))
-            tail_visited.add(tail)
+            knots[0] = _apply_move(knots[0], head_move.delta)
+            for idx in range(1, len(knots)):
+                knots[idx] = _apply_move(
+                    knots[idx],
+                    _tail_move(knots[idx - 1], knots[idx]),
+                )
+            tail_visited.add(knots[-1])
 
-    pprint(tail_visited)
+    # pprint(tail_visited)
     return len(tail_visited)
+
+
+def part2(head_moves):
+    return part1(head_moves, count=10)
 
 
 if __name__ == "__main__":
@@ -106,3 +113,4 @@ if __name__ == "__main__":
     # pprint(head_moves)
 
     pprint(part1(head_moves))
+    pprint(part2(head_moves))
