@@ -58,12 +58,9 @@ def part2(ops):
     cycle = count(1)
     x = 1
 
-    # Cycles start at 1, positions at 0
-    # Therefore, the range is [0, 2], not [-1, 1]
-
     for cycle, x in execute(ops):
-        scanline_x = cycle % 40
-        if 0 <= scanline_x - x <= 2:
+        scanline_x = (cycle - 1) % 40
+        if -1 <= scanline_x - x <= 1:
             sys.stdout.write("#")
         else:
             sys.stdout.write(".")
