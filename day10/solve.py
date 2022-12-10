@@ -1,3 +1,4 @@
+import sys
 from itertools import count
 from pprint import pprint
 
@@ -53,8 +54,29 @@ def part1(ops):
     return sum(signal_strength(ops))
 
 
+def part2(ops):
+    cycle = count(1)
+    x = 1
+
+    # Cycles start at 1, positions at 0
+    # Therefore, the range is [0, 2], not [-1, 1]
+
+    for cycle, x in execute(ops):
+        scanline_x = cycle % 40
+        if 0 <= scanline_x - x <= 2:
+            sys.stdout.write("#")
+        else:
+            sys.stdout.write(".")
+        if cycle % 40 == 0:
+            sys.stdout.write("\n")
+
+
+
 if __name__ == "__main__":
     with open("input.txt") as f:
         ops = list(map(parse, f))
 
+    pprint(list(execute(ops)))
     pprint(part1(ops))
+
+    part2(ops)
