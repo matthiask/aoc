@@ -71,7 +71,6 @@ def part2(ops):
             sys.stdout.write("\n")
 
 
-
 if __name__ == "__main__":
     with open("input.txt") as f:
         ops = list(map(parse, f))

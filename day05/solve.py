@@ -57,7 +57,7 @@ def part1():
 
 def move_several(stacks, op):
     from_ = stacks[op.from_]
-    moving, stacks[op.from_] = from_[:op.count], from_[op.count:]
+    moving, stacks[op.from_] = from_[: op.count], from_[op.count :]
     stacks[op.to_][UPPERMOST:UPPERMOST] = moving
 
 
