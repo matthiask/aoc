@@ -107,10 +107,15 @@ def part2(head_moves):
     return part1(head_moves, count=10)
 
 
-if __name__ == "__main__":
+def run():
     with open("input.txt") as f:
         head_moves = list(map(_parse_move, f))
     # pprint(head_moves)
 
     pprint(part1(head_moves))
     pprint(part2(head_moves))
+
+
+if __name__ == "__main__":
+    for _i in range(10):
+        run()

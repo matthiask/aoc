@@ -72,7 +72,7 @@ if __name__ == "__main__":
     with open("input.txt") as f:
         ops = list(map(parse, f))
 
-    pprint(list(execute(ops)))
+    # pprint(list(execute(ops)))
     pprint(part1(ops))
 
     part2(ops)
