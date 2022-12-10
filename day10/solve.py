@@ -54,7 +54,7 @@ def part1(ops):
 
 
 if __name__ == "__main__":
-    with open("test.txt") as f:
+    with open("input.txt") as f:
         ops = list(map(parse, f))
 
     pprint(part1(ops))
