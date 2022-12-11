@@ -56,5 +56,30 @@ def part1():
     print("part1", flash_count)
 
 
+def part2():
+    energy = dict(INITIAL)
+    flash_count = 0
+
+    def _maybe_flash(flashed):
+        if new := enough_energy_to_flash(energy) - flashed:
+            for flashing in new:
+                for point in surrounding(flashing):
+                    energy[point] += 1
+
+            return len(new) + _maybe_flash(flashed | new)
+        for point in flashed:
+            energy[point] = 0
+        return 0
+
+    for step in range(1000):
+        for point in all_points:
+            energy[point] += 1
+
+        if _maybe_flash(set()) == max_x * max_y:
+            print("part2", step + 1)
+            break
+
+
 if __name__ == "__main__":
     part1()
+    part2()
