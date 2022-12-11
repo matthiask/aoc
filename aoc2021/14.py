@@ -17,8 +17,8 @@ def step(template, rules):
     """
     result = [template[0]]
     for i in range(len(template) - 1):
-        result.append(rules[template[i:i+2]])
-        result.append(template[i+1])
+        result.append(rules[template[i : i + 2]])
+        result.append(template[i + 1])
     return "".join(result)
 
 
