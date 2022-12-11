@@ -16,8 +16,7 @@ all_points = [(x, y) for x in range(max_x) for y in range(max_y)]
 
 def pretty(energy):
     return "\n".join(
-        " ".join(str(energy[(x, y)]) for x in range(max_x))
-        for y in range(max_y)
+        " ".join(str(energy[(x, y)]) for x in range(max_x)) for y in range(max_y)
     )
 
 
