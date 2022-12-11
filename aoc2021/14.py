@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 from pprint import pprint
 
 
@@ -38,10 +38,42 @@ def part1():
 
 
 def part2():
-    p, rules = read()
+    polymer, rules = read()
+
+    counts = defaultdict(int)
+    for pair in zip(polymer, polymer[1:]):
+        counts[pair] += 1
+
+    pprint(counts)
+
+    pair_rules = {}
+    for pair, middle in rules.items():
+        pair_rules[tuple(list(pair))] = [(pair[0], middle), (middle, pair[1])]
+
+    pprint(pair_rules)
+
     for _i in range(40):
-        p = step(p, rules)
-        print(_i + 1, len(p), eval(p))
+        for pair, count in list(counts.items()):
+            if count < 0:
+                raise Exception
+            if count == 0:
+                continue
+            counts[pair] -= count
+            for new in pair_rules[pair]:
+                counts[new] += count
+
+    pprint(counts)
+
+    element_counts = defaultdict(int)
+    # First element
+    element_counts["P"] += 1
+    # Now, only ever count the second element of a pair to not double count
+    # any elements
+    for pair, count in counts.items():
+        element_counts[pair[1]] += count
+
+    frequencies = sorted(element_counts.items(), key=lambda r: r[1])
+    pprint(frequencies[-1][1] - frequencies[0][1])
 
 
 if __name__ == "__main__":
