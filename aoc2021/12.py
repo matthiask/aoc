@@ -54,15 +54,15 @@ def is_visitable(cave, path):
 
 def _deepen_into_adjacent_caves(paths):
     for path in paths:
-        yield [
+        yield {
             path + (cave,)
             for cave in system.adjacent_caves(path[-1])
             if is_visitable(cave, path)
-        ]
+        }
 
 
 def _deepen(paths):
-    return list(chain.from_iterable(_deepen_into_adjacent_caves(paths)))
+    return set(chain.from_iterable(_deepen_into_adjacent_caves(paths)))
 
 
 def bfs(system):
@@ -70,12 +70,12 @@ def bfs(system):
     end = system.get_cave("end")
 
     end_reached = set()
-    paths = [(start,)]
+    paths = {(start,)}
     while True:
         paths = _deepen(paths)
 
         end_reached |= {path for path in paths if path[-1] == end}
-        paths = [path for path in paths if path[-1] != end]
+        paths -= end_reached
 
         if not paths:
             break
