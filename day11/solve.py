@@ -40,20 +40,21 @@ def _ints_from_line(line):
 
 
 OP = {
-    "+": lambda v: lambda worry: (worry + v) // 3,
-    "*": lambda v: lambda worry: (worry * v) // 3,
+    "+": lambda v, relief: lambda worry: relief(worry + v),
+    "*": lambda v, relief: lambda worry: relief(worry * v),
+    "*self": lambda relief: lambda worry: relief(worry * worry),
 }
 
 
-def parse_monkey(lines):
+def parse_monkey(lines, *, relief):
     idx = _int_from_line(lines.pop(0))
     items = _ints_from_line(lines.pop(0))
 
     op = re.search(r"new = old (.) ([0-9]+|old)", lines.pop(0)).groups()
     if op == ("*", "old"):
-        operation = lambda worry: (worry * worry) // 3
+        operation = OP["*self"](relief)
     else:
-        operation = OP[op[0]](int(op[1]))
+        operation = OP[op[0]](int(op[1]), relief)
 
     divisible_by = _int_from_line(lines.pop(0))
     if_true = _int_from_line(lines.pop(0))
@@ -65,23 +66,26 @@ def parse_monkey(lines):
     return Monkey(idx, items, operation, divisible_by, if_true, if_false)
 
 
-def parse():
+def parse(*, relief):
     with open("input.txt") as f:
         lines = [line.strip() for line in f]
     while lines:
-        yield parse_monkey(lines)
+        yield parse_monkey(lines, relief=relief)
 
 
-if __name__ == "__main__":
-    monkeys = {monkey.idx: monkey for monkey in parse()}
+def simulate(*, relief, rounds):
+    monkeys = {monkey.idx: monkey for monkey in parse(relief=relief)}
 
-    for _i in range(20):
+    for _i in range(rounds):
         for monkey in monkeys.values():
             monkey.throw_all(monkeys)
 
-    pprint(monkeys)
-
+    # pprint(monkeys)
     inspection_counts = sorted(monkey.inspection_count for monkey in monkeys.values())
-    pprint(inspection_counts)
+    # pprint(inspection_counts)
+    pprint(inspection_counts[-1] * inspection_counts[-2])
 
-    print(inspection_counts[-1] * inspection_counts[-2])
+
+if __name__ == "__main__":
+    simulate(rounds=20, relief=lambda v: v // 3)
+    simulate(rounds=10000, relief=lambda v: v % (11 * 2 * 5 * 17 * 19 * 7 * 3 * 13))
