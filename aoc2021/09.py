@@ -3,36 +3,27 @@ from functools import reduce
 
 
 with open("09.txt") as f:
-    heightmap = [[int(h) for h in line.strip()] for line in f]
+    heightmap = {
+        (x, y): int(h) for y, line in enumerate(f) for x, h in enumerate(line.strip())
+    }
 
-max_x = len(heightmap[0])
-max_y = len(heightmap)
+
+max_x = 100
+max_y = 100
 
 
-def is_low_point(x, y):
-    h = heightmap[y][x]
-    return all(
-        (
-            # North
-            heightmap[y - 1][x] > h if y > 0 else True,
-            # West
-            heightmap[y][x + 1] > h if x + 1 < max_x else True,
-            # South
-            heightmap[y + 1][x] > h if y + 1 < max_y else True,
-            # East
-            heightmap[y][x - 1] > h if x > 0 else True,
-        )
-    )
+def is_low_point(point):
+    h = heightmap[point]
+    return all(heightmap[ps] > h for ps in surrounding(point))
 
 
 def find_low_points():
-    return [
-        (x, y) for x in range(0, max_x) for y in range(0, max_y) if is_low_point(x, y)
-    ]
+    all_points = ((x, y) for x in range(0, max_x) for y in range(0, max_y))
+    return [point for point in all_points if is_low_point(point)]
 
 
 def part1():
-    return sum(1 + heightmap[y][x] for x, y in find_low_points())
+    return sum(1 + heightmap[point] for point in find_low_points())
 
 
 def surrounding(point):
@@ -41,9 +32,13 @@ def surrounding(point):
         filter(
             None,
             (
+                # North
                 (x, y - 1) if y > 0 else None,
+                # West
                 (x + 1, y) if x + 1 < max_x else None,
+                # South
                 (x, y + 1) if y + 1 < max_y else None,
+                # East
                 (x - 1, y) if x > 0 else None,
             ),
         )
@@ -56,7 +51,7 @@ def find_basin(point):
         candidates = reduce(
             operator.or_, (surrounding(point) for point in basin), basin
         )
-        new = {point for point in candidates if heightmap[point[1]][point[0]] < 9}
+        new = {point for point in candidates if heightmap[point] < 9}
         if new == basin:
             return basin
         # print(basin, new)
