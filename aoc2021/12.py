@@ -1,6 +1,7 @@
+import operator
 from dataclasses import dataclass
 from collections import defaultdict
-from itertools import chain
+from functools import reduce
 from pprint import pprint
 
 
@@ -53,15 +54,16 @@ def is_visitable(cave, path):
 
 
 def _deepen(paths):
-    return set(
-        chain.from_iterable(
+    return reduce(
+        operator.or_,
+        (
             {
                 path + (cave,)
                 for cave in system.adjacent_caves(path[-1])
                 if is_visitable(cave, path)
             }
             for path in paths
-        )
+        ),
     )
 
 
