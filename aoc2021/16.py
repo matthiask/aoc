@@ -1,4 +1,6 @@
+import operator
 from dataclasses import dataclass
+from functools import reduce
 from pprint import pprint
 from typing import Any
 
@@ -63,12 +65,71 @@ class Literal:
     type_id: int
     number: int
 
+    def value(self):
+        return self.number
+
 
 @dataclass
 class Operator:
     version: int
     type_id: int
     subpackets: tuple = ()
+
+
+@dataclass
+class OperatorSum(Operator):
+    def value(self):
+        return sum(packet.value() for packet in self.subpackets)
+
+
+@dataclass
+class OperatorProduct(Operator):
+    def value(self):
+        return reduce(operator.mul, (packet.value() for packet in self.subpackets))
+
+
+@dataclass
+class OperatorMinimum(Operator):
+    def value(self):
+        return min(packet.value() for packet in self.subpackets)
+
+
+@dataclass
+class OperatorMaximum(Operator):
+    def value(self):
+        return max(packet.value() for packet in self.subpackets)
+
+
+@dataclass
+class OperatorGreaterThan(Operator):
+    def value(self):
+        v1, v2 = [packet.value() for packet in self.subpackets]
+        return int(v1 > v2)
+
+
+@dataclass
+class OperatorLessThan(Operator):
+    def value(self):
+        v1, v2 = [packet.value() for packet in self.subpackets]
+        return int(v1 < v2)
+
+
+@dataclass
+class OperatorEqual(Operator):
+    def value(self):
+        v1, v2 = [packet.value() for packet in self.subpackets]
+        return int(v1 == v2)
+
+
+operator_types = {
+    0: OperatorSum,
+    1: OperatorProduct,
+    2: OperatorMinimum,
+    3: OperatorMaximum,
+    5: OperatorGreaterThan,
+    6: OperatorLessThan,
+    7: OperatorEqual,
+}
 
 
 def read_packet(reader):
@@ -87,14 +148,11 @@ def read_packet(reader):
     # Operator packet
     length_type_id = read_int(reader, 1)
     if length_type_id == 0:
-        subreader = create_reader(reader(read_int(reader, 15)))
-        return Operator(version, type_id, subpackets=parse(subreader))
+        subpackets = parse(create_reader(reader(read_int(reader, 15))))
     else:
-        return Operator(
-            version,
-            type_id,
-            subpackets=[read_packet(reader) for _i in range(read_int(reader, 11))],
-        )
+        subpackets = [read_packet(reader) for _i in range(read_int(reader, 11))]
+
+    return operator_types[type_id](version, type_id, subpackets)
 
 
 def parse(reader):
@@ -121,9 +179,8 @@ def sum_up_versions(packets):
 if __name__ == "__main__":
     data = read()
     reader = create_reader(data)
-    # print(read_packet(
-    # print(read())
 
-    packets = read_packet(reader)
-    pprint(packets)
-    pprint(sum_up_versions([packets]))
+    packet = read_packet(reader)
+    pprint(packet)
+    pprint(sum_up_versions([packet]))
+    pprint(packet.value())
