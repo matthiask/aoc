@@ -39,22 +39,22 @@ def _ints_from_line(line):
     return [int(s) for s in re.findall(r"([0-9]+)", line)]
 
 
-OP = {
-    "+": lambda v, relief: lambda worry: relief(worry + v),
-    "*": lambda v, relief: lambda worry: relief(worry * v),
-    "*self": lambda relief: lambda worry: relief(worry * worry),
-}
-
-
 def parse_monkey(lines, *, relief):
     idx = _int_from_line(lines.pop(0))
     items = _ints_from_line(lines.pop(0))
 
     op = re.search(r"new = old (.) ([0-9]+|old)", lines.pop(0)).groups()
-    if op == ("*", "old"):
-        operation = OP["*self"](relief)
-    else:
-        operation = OP[op[0]](int(op[1]), relief)
+    match op:
+        case ("*", "old"):
+            operation = lambda worry: relief(worry * worry)
+        case ("*", v):
+            v = int(v)
+            operation = lambda worry: relief(worry * v)
+        case ("+", v):
+            v = int(v)
+            operation = lambda worry: relief(worry + v)
+        case _:
+            raise Exception
 
     divisible_by = _int_from_line(lines.pop(0))
     if_true = _int_from_line(lines.pop(0))
