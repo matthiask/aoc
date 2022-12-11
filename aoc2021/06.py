@@ -32,6 +32,7 @@ counter.update(INITIAL)
 
 generation = [counter.get(days, 0) for days in range(0, 9)]
 
+
 def cycle(generation):
     head, *tail = generation
     tail[6] += head
