@@ -87,7 +87,10 @@ def find_y_velocities(bounds, x_velocity):
                 break
             if point[1] < bounds["ymax"]:
                 break
-            elif bounds["xmin"] <= point[0] <= bounds["xmax"] and bounds["ymin"] <= point[0] <= bounds["ymax"]:
+            elif (
+                bounds["xmin"] <= point[0] <= bounds["xmax"]
+                and bounds["ymin"] <= point[0] <= bounds["ymax"]
+            ):
                 # Hit
                 y_velocities.add(y_velocity)
 
@@ -101,7 +104,10 @@ def part1():
     pprint(x_velocities)
     return
 
-    y_velocities = reduce(operator.or_, (find_y_velocities(bounds, x_velocity) for x_velocity in x_velocities))
+    y_velocities = reduce(
+        operator.or_,
+        (find_y_velocities(bounds, x_velocity) for x_velocity in x_velocities),
+    )
 
     pprint(y_velocities)
 
@@ -121,8 +127,27 @@ def new_part1():
     print("highest y point:", y_velocity * (y_velocity + 1) // 2)
 
 
+def new_part2():
+    bounds = read()
+    found = 0
+    for x_velocity in find_x_velocities(bounds):
+        for y_velocity in range(bounds["ymin"], abs(bounds["ymin"])):
+            print(f"Checking {x_velocity},{y_velocity}")
+            for x, y in trajectory(x_velocity, y_velocity, bounds):
+                if (
+                    bounds["xmin"] <= x <= bounds["xmax"]
+                    and bounds["ymin"] <= y <= bounds["ymax"]
+                ):
+                    found += 1
+                    break
+
+    print("part2")
+    print(found)
+
+
 if __name__ == "__main__":
     # pprint(read())
     # part1()
 
     new_part1()
+    new_part2()
