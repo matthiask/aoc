@@ -106,6 +106,17 @@ def part1():
     pprint(y_velocities)
 
 
+def new_part1():
+    bounds = read()
+    print("part1")
+    print("x velocity", find_min_x_velocity(bounds["xmin"]))
+    y_velocity = -bounds["ymin"] - 1
+    print("y velocity", y_velocity)
+    print("highest y point:", y_velocity * (y_velocity + 1) // 2)
+
+
 if __name__ == "__main__":
     # pprint(read())
     # part1()
+
+    new_part1()
