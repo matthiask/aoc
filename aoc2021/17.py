@@ -109,7 +109,13 @@ def part1():
 def new_part1():
     bounds = read()
     print("part1")
+    # Not needed, but still. Lowest possible x velocity is as good as any.
     print("x velocity", find_min_x_velocity(bounds["xmin"]))
+
+    # Since the dy values are the same when going up as when coming down
+    # again we only have to look at the last segment (from zero to ymin),
+    # subtract one from the difference and apply the Gauss formula to
+    # sum up all y segments.
     y_velocity = -bounds["ymin"] - 1
     print("y velocity", y_velocity)
     print("highest y point:", y_velocity * (y_velocity + 1) // 2)
