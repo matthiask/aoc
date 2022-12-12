@@ -39,9 +39,20 @@ def reduce(n):
     """
 
     def _apply(p, idx, to_explode):
-        if idx > 0 and to_explode[0] and isinstance(p[idx - 1], int):
-            p[idx - 1] += to_explode[0]
+        if idx > 0 and to_explode[0]:
+            if isinstance(p[idx - 1], int):
+                p[idx - 1] += to_explode[0]
+            # FIXME That's bad.
+            elif isinstance(p[idx - 1][1], int):
+                p[idx - 1][1] += to_explode[0]
+            elif isinstance(p[idx - 1][1][1], int):
+                p[idx - 1][1][1] += to_explode[0]
+            elif isinstance(p[idx - 1][1][1][1], int):
+                p[idx - 1][1][1][1] += to_explode[0]
+            elif isinstance(p[idx - 1][1][1][1][1], int):
+                p[idx - 1][1][1][1][1] += to_explode[0]
             to_explode[0] = 0
+
         if idx < len(p) - 1 and to_explode[1]:
             if isinstance(p[idx + 1], int):
                 p[idx + 1] += to_explode[1]
@@ -52,6 +63,8 @@ def reduce(n):
                 p[idx + 1][0][0] += to_explode[1]
             elif isinstance(p[idx + 1][0][0][0], int):
                 p[idx + 1][0][0][0] += to_explode[1]
+            elif isinstance(p[idx + 1][0][0][0][0], int):
+                p[idx + 1][0][0][0][0] += to_explode[1]
             to_explode[1] = 0
 
     def _helper(p, depth):
@@ -82,6 +95,8 @@ def add(n1, n2):
     """
     >>> add([[[[4, 3], 4], 4], [7, [[8, 4], 9]]], [1, 1])
     [[[[0, 7], 4], [[7, 8], [6, 0]]], [8, 1]]
+    >>> add([[[[7, 7], [7, 7]], [[8, 7], [8, 7]]], [[[7, 0], [7, 7]], 9]], [[[[4, 2], 2], 6], [8, 7]])
+    [[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]]
     """
     n = [n1, n2]
     while True:
@@ -94,6 +109,12 @@ def magnitude(n):
     """
     >>> magnitude([[1,2],[[3,4],5]])
     143
+    >>> magnitude([[[[0,7],4],[[7,8],[6,0]]],[8,1]])
+    1384
+    >>> magnitude([[[[1,1],[2,2]],[3,3]],[4,4]])
+    445
+    >>> magnitude([[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]])
+    3488
     """
 
     def _magnitude(v):
