@@ -1,5 +1,5 @@
 import re
-from itertools import islice
+from itertools import count
 from pprint import pprint
 
 
@@ -14,18 +14,28 @@ def read():
         }
 
 
-def trajectory(x_velocity, y_velocity):
+def trajectory(x_velocity, y_velocity, bounds):
     """
-    >>> list(islice(trajectory(4, 3), 3))
-    [(4, 3), (7, 5), (9, 6)]
-    >>> list(islice(trajectory(2, 0), 4))
-    [(2, 0), (3, -1), (3, -3), (3, -6)]
+    >>> list(trajectory(10, 0, {"xmin": 0, "xmax": 20, "ymin": -1e9}))
+    [(10, 0), (19, -1)]
+    >>> list(trajectory(10, 0, {"xmin": 0, "xmax": 1e9, "ymin": -10}))
+    [(10, 0), (19, -1), (27, -3), (34, -6), (40, -10)]
     """
     x = 0
     y = 0
     while True:
         x += x_velocity
         y += y_velocity
+
+        if x > bounds["xmax"]:
+            # Too far to the right
+            break
+        elif y < bounds["ymin"]:
+            # Too far down
+            break
+        elif x < bounds["xmin"] and x_velocity == 0:
+            # Unreachable, no x velocity anymore
+            break
 
         yield (x, y)
 
@@ -35,18 +45,40 @@ def trajectory(x_velocity, y_velocity):
         y_velocity -= 1
 
 
-def cut_off_at(points, bounds):
+def find_min_x_velocity(xmin):
     """
-    >>> list(cut_off_at(trajectory(10, 0), {"xmax": 20, "ymin": -1e9}))
-    [(10, 0), (19, -1)]
-    >>> list(cut_off_at(trajectory(10, 0), {"xmax": 1e9, "ymin": -10}))
-    [(10, 0), (19, -1), (27, -3), (34, -6), (40, -10)]
+    >>> find_min_x_velocity(10)
+    4
+    >>> find_min_x_velocity(5050)
+    100
     """
-    for point in points:
-        if point[0] > bounds["xmax"] or point[1] < bounds["ymin"]:
-            break
-        yield point
+
+    for i in count(1):
+        # Gauss.
+        if i * (i + 1) // 2 >= xmin:
+            return i
+
+
+def find_x_velocities(bounds):
+    min_xv = find_min_x_velocity(bounds["xmin"])
+
+    x_velocities = set()
+
+    for x_velocity in range(min_xv, bounds["xmax"] + 1):
+        print(f"Testing {x_velocity}...")
+        for point in trajectory(x_velocity, 0, bounds | {"ymin": -1000}):
+            if bounds["xmin"] <= point[0] <= bounds["xmax"]:
+                x_velocities.add(x_velocity)
+
+    return sorted(x_velocities)
+
+
+def part1():
+    bounds = read()
+
+    pprint(find_x_velocities(bounds))
 
 
 if __name__ == "__main__":
-    pprint(read())
+    # pprint(read())
+    part1()
