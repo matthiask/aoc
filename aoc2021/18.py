@@ -73,9 +73,9 @@ def find_splittable(node):
     return None
 
 
-def find_expandable(node):
+def find_explosable(node):
     """
-    >>> node = find_expandable(parse_number("[[[[[9, 8], 1], 2], 3], 4]"))
+    >>> node = find_explosable(parse_number("[[[[[9, 8], 1], 2], 3], 4]"))
     >>> node and [node.left.value, node.right.value]
     [9, 8]
     """
@@ -85,6 +85,50 @@ def find_expandable(node):
     except StopIteration:
         pass
     return None
+
+
+def substitute_with(node, new):
+    if node.parent.left == node:
+        node.parent.left = new
+    elif node.parent.right == node:
+        node.parent.right = new
+    else:
+        raise Exception()
+
+
+def explode(node):
+    substitute_with(node, Leaf(node.parent, 0))
+
+    # FIXME add left/right
+
+
+def split(node):
+    """
+    >>> p = Branch()
+    >>> p.left=Leaf(p, 11)
+    >>> p.right=Leaf(p, 8)
+    >>> split(find_splittable(p))
+    >>> [p.left.left.value, p.left.right.value]
+    [5, 6]
+    >>> p.right.value
+    8
+    """
+    new = Branch(parent=node.parent)
+    left = node.value // 2
+    new.left = Leaf(new, left)
+    new.right = Leaf(new, node.value - left)
+    substitute_with(node, new)
+
+
+def simplify(node):
+    while True:
+        if explosable := find_explosable(node):
+            explode(node)
+            continue
+        if splittable := find_splittable(node):
+            split(node)
+            continue
+        break
 
 
 # def add(n1, n2):
