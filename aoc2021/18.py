@@ -10,8 +10,10 @@ class Leaf:
     parent: "Branch"
     value: int
 
-    @property
     def magnitude(self):
+        return self.value
+
+    def unparse(self):
         return self.value
 
 
@@ -21,9 +23,11 @@ class Branch:
     left: Union[Leaf, "Branch"] = None
     right: Union[Leaf, "Branch"] = None
 
-    @property
     def magnitude(self):
-        return self.left.magnitude * 3 + self.right.magnitude * 2
+        return self.left.magnitude() * 3 + self.right.magnitude() * 2
+
+    def unparse(self):
+        return [self.left.unparse(), self.right.unparse()]
 
 
 def dfs(node, *, depth=0):
@@ -59,6 +63,10 @@ def parse_number(line):
     return _parse_branch(tokens, None)
 
 
+def unparse(node):
+    return node.unparse()
+
+
 def read():
     numbers = []
     with open("18.txt") as f:
@@ -81,18 +89,34 @@ def find_splittable(node):
     return None
 
 
-def find_explosable(node):
+def find_explodable(node):
     """
-    >>> node = find_explosable(parse_number("[[[[[9, 8], 1], 2], 3], 4]"))
-    >>> node and [node.left.value, node.right.value]
+    >>> unparse(find_explodable(parse_number("[[[[[9, 8], 1], 2], 3], 4]"))[1])
     [9, 8]
     """
 
-    try:
-        return next(n for n, depth in dfs(node) if depth == 4 and isinstance(n, Branch))
-    except StopIteration:
-        pass
-    return None
+    previous_leaf = None
+    explodable = None
+    next_leaf = None
+
+    for n, depth in dfs(node):
+        if (
+            depth == 4
+            and isinstance(n, Branch)
+            and isinstance(n.left, Leaf)
+            and isinstance(n.right, Leaf)
+        ):
+            explodable = n
+
+        elif explodable is None and isinstance(n, Leaf):
+            previous_leaf = n
+
+        elif explodable is not None and n.parent != explodable and isinstance(n, Leaf):
+            next_leaf = n
+            break
+
+    if explodable:
+        return previous_leaf, explodable, next_leaf
 
 
 def substitute_with(node, new):
@@ -104,26 +128,30 @@ def substitute_with(node, new):
         raise Exception()
 
 
-def explode(node):
-    left = node.left.value
-    right = node.right.value
-
-    # TODO Find first Leaf on the left and add "left"
-    # TODO Find first Leaf on the right and add "right"
-
-    substitute_with(node, Leaf(node.parent, 0))
+def explode(previous_leaf, node, next_leaf):
+    """
+    >>> p = parse_number("[[[[[9,8],1],2],3],4]")
+    >>> explode(*find_explodable(p))
+    >>> unparse(p)
+    [[[[0, 9], 2], 3], 4]
+    >>> p = parse_number("[[3, [2, [8, 0]]], [9, [5, [4, [3, 2]]]]]")
+    >>> explode(*find_explodable(p))
+    >>> unparse(p)
+    [[3, [2, [8, 0]]], [9, [5, [7, 0]]]]
+    """
+    if previous_leaf:
+        previous_leaf.value += node.left.value
+    if next_leaf:
+        next_leaf.value += node.right.value
+    substitute_with(node, Leaf(parent=node.parent, value=0))
 
 
 def split(node):
     """
-    >>> p = Branch()
-    >>> p.left = Leaf(p, 11)
-    >>> p.right = Leaf(p, 8)
+    >>> p = parse_number("[11,8]")
     >>> split(find_splittable(p))
-    >>> [p.left.left.value, p.left.right.value]
-    [5, 6]
-    >>> p.right.value
-    8
+    >>> unparse(p)
+    [[5, 6], 8]
     """
     new = Branch(parent=node.parent)
     left = node.value // 2
@@ -134,11 +162,11 @@ def split(node):
 
 def simplify(node):
     while True:
-        if explosable := find_explosable(node):
-            explode(node)
+        if explodable := find_explodable(node):
+            explode(*explodable)
             continue
         if splittable := find_splittable(node):
-            split(node)
+            split(splittable)
             continue
         break
 
@@ -154,41 +182,20 @@ def magnitude(node):
     >>> magnitude(parse_number("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]"))
     3488
     """
-    return node.magnitude
+    return node.magnitude()
 
 
-# def add(n1, n2):
-#     return [n1, n2]
-#
-#
-# class Stop(Exception):
-#     pass
-#
-#
-# def split(n):
-#     """
-#     >>> split(10)
-#     [5, 5]
-#     >>> split(11)
-#     [5, 6]
-#     >>> split(12)
-#     [6, 6]
-#     """
-#     left = n // 2
-#     return [left, n - left]
-#
-#
 # def reduce(n):
 #     """
-#     >>> reduce([[[[[9, 8], 1], 2], 3], 4])[0]
+#     >>> reduce([[[[[9, 8], 1], 2], 3], 4])
 #     [[[[0, 9], 2], 3], 4]
-#     >>> reduce([7, [6, [5, [4, [3, 2]]]]])[0]
+#     >>> reduce([7, [6, [5, [4, [3, 2]]]]])
 #     [7, [6, [5, [7, 0]]]]
-#     >>> reduce([[6, [5, [4, [3, 2]]]], 1])[0]
+#     >>> reduce([[6, [5, [4, [3, 2]]]], 1])
 #     [[6, [5, [7, 0]]], 3]
-#     >>> reduce([[3, [2, [1, [7, 3]]]], [6, [5, [4, [3, 2]]]]])[0]
+#     >>> reduce([[3, [2, [1, [7, 3]]]], [6, [5, [4, [3, 2]]]]])
 #     [[3, [2, [8, 0]]], [9, [5, [4, [3, 2]]]]]
-#     >>> reduce([[3, [2, [8, 0]]], [9, [5, [4, [3, 2]]]]])[0]
+#     >>> reduce([[3, [2, [8, 0]]], [9, [5, [4, [3, 2]]]]])
 #     [[3, [2, [8, 0]]], [9, [5, [7, 0]]]]
 #     """
 #
@@ -243,43 +250,22 @@ def magnitude(node):
 #     except Stop:
 #         return n, True
 #     return n, _changed
-#
-#
-# def add(n1, n2):
-#     """
-#     >>> add([[[[4, 3], 4], 4], [7, [[8, 4], 9]]], [1, 1])
-#     [[[[0, 7], 4], [[7, 8], [6, 0]]], [8, 1]]
-#     >>> add([[[[7, 7], [7, 7]], [[8, 7], [8, 7]]], [[[7, 0], [7, 7]], 9]], [[[[4, 2], 2], 6], [8, 7]])
-#     [[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]]
-#     """
-#     n = [n1, n2]
-#     while True:
-#         n, changed = reduce(n)
-#         if not changed:
-#             return n
-#
-#
-# def magnitude(n):
-#     """
-#     >>> magnitude([[1,2],[[3,4],5]])
-#     143
-#     >>> magnitude([[[[0,7],4],[[7,8],[6,0]]],[8,1]])
-#     1384
-#     >>> magnitude([[[[1,1],[2,2]],[3,3]],[4,4]])
-#     445
-#     >>> magnitude([[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]])
-#     3488
-#     """
-#
-#     def _magnitude(v):
-#         if isinstance(v, list) and len(v) == 2:
-#             return _magnitude(v[0]) * 3 + _magnitude(v[1]) * 2
-#         elif isinstance(v, int):
-#             return v
-#         else:
-#             raise Exception(f"What is {v}")
-#
-#     return _magnitude(n)
+
+
+def add(n1, n2):
+    """
+    >>> unparse(add(parse_number("[[[[4, 3], 4], 4], [7, [[8, 4], 9]]]"), parse_number("[1, 1]")))
+    [[[[0, 7], 4], [[7, 8], [6, 0]]], [8, 1]]
+    >>> unparse(add(parse_number("[[[[7, 7], [7, 7]], [[8, 7], [8, 7]]], [[[7, 0], [7, 7]], 9]]"), parse_number("[[[[4, 2], 2], 6], [8, 7]]")))
+    [[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]]
+    """
+
+    n = Branch(parent=None)
+    n1.parent = n2.parent = n
+    n.left = n1
+    n.right = n2
+    simplify(n)
+    return n
 
 
 if __name__ == "__main__":
@@ -295,3 +281,9 @@ if __name__ == "__main__":
     print()
     print()
     pprint(list(dfs(numbers[-1])))
+
+    unparse(
+        add(
+            parse_number("[[[[4, 3], 4], 4], [7, [[8, 4], 9]]]"), parse_number("[1, 1]")
+        )
+    )
