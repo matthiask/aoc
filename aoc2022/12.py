@@ -34,10 +34,14 @@ def surrounding(point):
     )
 
 
-specials = {
-    "S": "a",
-    "E": "z",
-}
+def _height(height):
+    match height:
+        case "S":
+            return ord("a")
+        case "E":
+            return ord("z")
+        case h:
+            return ord(h)
 
 
 def only_visitable(height, points):
@@ -45,10 +49,8 @@ def only_visitable(height, points):
     >>> only_visitable("a", {(1, 0), (2, 0), (3, 0)})
     {(1, 0), (2, 0)}
     """
-    h = ord(specials.get(height, height))
-    # diff = {point: ord(heightmap[point]) - h for point in points}
-    # print(diff)
-    return {point for point in points if ord(specials.get(heightmap[point], heightmap[point])) - h  <= 1}
+    h = _height(height)
+    return {point for point in points if _height(heightmap[point]) - h <= 1}
 
 
 def solve(start):
