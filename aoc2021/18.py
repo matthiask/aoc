@@ -10,12 +10,20 @@ class Leaf:
     parent: "Branch"
     value: int
 
+    @property
+    def magnitude(self):
+        return self.value
+
 
 @dataclass
 class Branch:
     parent: Union[None, "Branch"] = None
     left: Union[Leaf, "Branch"] = None
     right: Union[Leaf, "Branch"] = None
+
+    @property
+    def magnitude(self):
+        return self.left.magnitude * 3 + self.right.magnitude * 2
 
 
 def dfs(node, *, depth=0):
@@ -46,8 +54,9 @@ def _parse_branch(tokens, parent):
 
 def parse_number(line):
     line = re.sub(r"\s+", "", line)
-    tokens = [token for token in re.split(r"([\[\]\,])", line) if token]
-    return _parse_branch(iter(tokens[1:]), None)
+    tokens = filter(None, re.split(r"([\[\]\,])", line))
+    next(tokens)  # Discard first "[", outermost node is always a branch
+    return _parse_branch(tokens, None)
 
 
 def read():
@@ -60,7 +69,8 @@ def read():
 
 def find_splittable(node):
     """
-    >>> find_splittable(parse_number("[9,[2,1]]"))
+    >>> find_splittable(parse_number("[9,[2,1]]")) is None
+    True
     >>> find_splittable(parse_number("[9,[2,11]]")).value
     11
     """
@@ -131,6 +141,20 @@ def simplify(node):
             split(node)
             continue
         break
+
+
+def magnitude(node):
+    """
+    >>> magnitude(parse_number("[[1,2],[[3,4],5]]"))
+    143
+    >>> magnitude(parse_number("[[[[0,7],4],[[7,8],[6,0]]],[8,1]]"))
+    1384
+    >>> magnitude(parse_number("[[[[1,1],[2,2]],[3,3]],[4,4]]"))
+    445
+    >>> magnitude(parse_number("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]"))
+    3488
+    """
+    return node.magnitude
 
 
 # def add(n1, n2):
