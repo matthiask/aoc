@@ -1,4 +1,6 @@
+import operator
 import re
+from functools import reduce
 from itertools import count
 from pprint import pprint
 
@@ -73,12 +75,37 @@ def find_x_velocities(bounds):
     return sorted(x_velocities)
 
 
+def find_y_velocities(bounds, x_velocity):
+    y_velocities = set()
+
+    for y_velocity in count(1):
+        print(f"Checking ({x_velocity},{y_velocity})")
+        for point in trajectory(x_velocity, y_velocity, bounds):
+            print(point)
+            if point[0] > bounds["xmax"] and point[1] < bounds["xmin"]:
+                # Overshot
+                break
+            if point[1] < bounds["ymax"]:
+                break
+            elif bounds["xmin"] <= point[0] <= bounds["xmax"] and bounds["ymin"] <= point[0] <= bounds["ymax"]:
+                # Hit
+                y_velocities.add(y_velocity)
+
+    return y_velocities
+
+
 def part1():
     bounds = read()
 
-    pprint(find_x_velocities(bounds))
+    x_velocities = find_x_velocities(bounds)
+    pprint(x_velocities)
+    return
+
+    y_velocities = reduce(operator.or_, (find_y_velocities(bounds, x_velocity) for x_velocity in x_velocities))
+
+    pprint(y_velocities)
 
 
 if __name__ == "__main__":
     # pprint(read())
-    part1()
+    # part1()
