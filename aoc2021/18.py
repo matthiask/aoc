@@ -1,4 +1,5 @@
 import functools
+import re
 from dataclasses import dataclass
 from pprint import pprint
 from typing import Any, Union
@@ -24,29 +25,29 @@ def dfs(node, *, depth=0):
         yield from dfs(node.right, depth=depth + 1)
 
 
-def _parse_branch(chars, parent):
+def _parse_branch(tokens, parent):
     node = Branch(parent=parent)
     is_left = True
-    while c := next(chars):
-        if c == "[" and is_left:
-            node.left = _parse_branch(chars, node)
-        elif c == "[" and not is_left:
-            node.right = _parse_branch(chars, node)
-        elif c == "]":
+    while token := next(tokens):
+        if token == "[" and is_left:
+            node.left = _parse_branch(tokens, node)
+        elif token == "[" and not is_left:
+            node.right = _parse_branch(tokens, node)
+        elif token == "]":
             break
-        elif c == ",":
+        elif token == ",":
             is_left = False
-        elif c == " ":
-            pass
         elif is_left:
-            node.left = Leaf(node, int(c))
+            node.left = Leaf(node, int(token))
         else:
-            node.right = Leaf(node, int(c))
+            node.right = Leaf(node, int(token))
     return node
 
 
 def parse_number(line):
-    return _parse_branch(iter(line[1:]), None)
+    line = re.sub(r"\s+", "", line)
+    tokens = [token for token in re.split(r"([\[\]\,])", line) if token]
+    return _parse_branch(iter(tokens[1:]), None)
 
 
 def read():
@@ -60,11 +61,8 @@ def read():
 def find_splittable(node):
     """
     >>> find_splittable(parse_number("[9,[2,1]]"))
-    >>> p = Branch()
-    >>> p.left = Leaf(p, 11)
-    >>> p.right = Leaf(p, 13)
-    >>> find_splittable(p) == p.left
-    True
+    >>> find_splittable(parse_number("[9,[2,11]]")).value
+    11
     """
     try:
         return next(n for n, depth in dfs(node) if isinstance(n, Leaf) and n.value > 9)

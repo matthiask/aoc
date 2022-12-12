@@ -35,13 +35,11 @@ def surrounding(point):
 
 
 def _height(height):
-    match height:
-        case "S":
-            return ord("a")
-        case "E":
-            return ord("z")
-        case h:
-            return ord(h)
+    if height == "S":
+        return ord("a")
+    elif height == "E":
+        return ord("z")
+    return ord(height)
 
 
 def only_visitable(height, points):
