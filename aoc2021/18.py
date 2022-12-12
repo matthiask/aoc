@@ -91,8 +91,10 @@ def find_splittable(node):
 
 def find_explodable(node):
     """
-    >>> unparse(find_explodable(parse_number("[[[[[9, 8], 1], 2], 3], 4]"))[1])
-    [9, 8]
+    >>> a,b,c = find_explodable(parse_number("[[[[[9, 8], 1], 2], 3], 4]")); (a,unparse(b),c.value)
+    (None, [9, 8], 1)
+    >>> find_explodable(parse_number("[[[[9,8],1],2],3]")) is None
+    True
     """
 
     previous_leaf = None
@@ -103,15 +105,15 @@ def find_explodable(node):
         if (
             depth == 4
             and isinstance(n, Branch)
-            and isinstance(n.left, Leaf)
-            and isinstance(n.right, Leaf)
+            # and isinstance(n.left, Leaf)
+            # and isinstance(n.right, Leaf)
         ):
             explodable = n
 
         elif explodable is None and isinstance(n, Leaf):
             previous_leaf = n
 
-        elif explodable is not None and n.parent != explodable and isinstance(n, Leaf):
+        elif explodable is not None and n.parent is not explodable and isinstance(n, Leaf):
             next_leaf = n
             break
 
@@ -120,9 +122,9 @@ def find_explodable(node):
 
 
 def substitute_with(node, new):
-    if node.parent.left == node:
+    if node.parent.left is node:
         node.parent.left = new
-    elif node.parent.right == node:
+    elif node.parent.right is node:
         node.parent.right = new
     else:
         raise Exception()
@@ -134,6 +136,10 @@ def explode(previous_leaf, node, next_leaf):
     >>> explode(*find_explodable(p))
     >>> unparse(p)
     [[[[0, 9], 2], 3], 4]
+    >>> p = parse_number("[[[[1,[7,7]],2],3],4]")
+    >>> explode(*find_explodable(p))
+    >>> unparse(p)
+    [[[[8, 0], 9], 3], 4]
     >>> p = parse_number("[[3, [2, [8, 0]]], [9, [5, [4, [3, 2]]]]]")
     >>> explode(*find_explodable(p))
     >>> unparse(p)
@@ -161,6 +167,10 @@ def split(node):
 
 
 def simplify(node):
+    """
+    >>> unparse(simplify(parse_number("[[7, [[8, 4], 9], 1], 1]")))
+    [[7, 1], 1]
+    """
     while True:
         if explodable := find_explodable(node):
             explode(*explodable)
@@ -169,6 +179,7 @@ def simplify(node):
             split(splittable)
             continue
         break
+    return node
 
 
 def magnitude(node):
@@ -185,78 +196,13 @@ def magnitude(node):
     return node.magnitude()
 
 
-# def reduce(n):
-#     """
-#     >>> reduce([[[[[9, 8], 1], 2], 3], 4])
-#     [[[[0, 9], 2], 3], 4]
-#     >>> reduce([7, [6, [5, [4, [3, 2]]]]])
-#     [7, [6, [5, [7, 0]]]]
-#     >>> reduce([[6, [5, [4, [3, 2]]]], 1])
-#     [[6, [5, [7, 0]]], 3]
-#     >>> reduce([[3, [2, [1, [7, 3]]]], [6, [5, [4, [3, 2]]]]])
-#     [[3, [2, [8, 0]]], [9, [5, [4, [3, 2]]]]]
-#     >>> reduce([[3, [2, [8, 0]]], [9, [5, [4, [3, 2]]]]])
-#     [[3, [2, [8, 0]]], [9, [5, [7, 0]]]]
-#     """
-#
-#     def _apply(p, idx, to_explode):
-#         if idx > 0 and to_explode[0]:
-#             if isinstance(p[idx - 1], int):
-#                 p[idx - 1] += to_explode[0]
-#             # FIXME That's bad.
-#             elif isinstance(p[idx - 1][1], int):
-#                 p[idx - 1][1] += to_explode[0]
-#             elif isinstance(p[idx - 1][1][1], int):
-#                 p[idx - 1][1][1] += to_explode[0]
-#             elif isinstance(p[idx - 1][1][1][1], int):
-#                 p[idx - 1][1][1][1] += to_explode[0]
-#             elif isinstance(p[idx - 1][1][1][1][1], int):
-#                 p[idx - 1][1][1][1][1] += to_explode[0]
-#             to_explode[0] = 0
-#
-#         if idx < len(p) - 1 and to_explode[1]:
-#             if isinstance(p[idx + 1], int):
-#                 p[idx + 1] += to_explode[1]
-#             # FIXME That's bad.
-#             elif isinstance(p[idx + 1][0], int):
-#                 p[idx + 1][0] += to_explode[1]
-#             elif isinstance(p[idx + 1][0][0], int):
-#                 p[idx + 1][0][0] += to_explode[1]
-#             elif isinstance(p[idx + 1][0][0][0], int):
-#                 p[idx + 1][0][0][0] += to_explode[1]
-#             elif isinstance(p[idx + 1][0][0][0][0], int):
-#                 p[idx + 1][0][0][0][0] += to_explode[1]
-#             to_explode[1] = 0
-#
-#     def _helper(p, depth):
-#         for idx in range(len(p)):
-#             if isinstance(p[idx], list):
-#                 if depth < 4:
-#                     if to_explode := _helper(p[idx], depth + 1):
-#                         _apply(p, idx, to_explode)
-#                         return to_explode
-#                 else:
-#                     # Inner list has depth 4 and is to be exploded.
-#                     to_explode = p[idx]
-#                     p[idx] = 0
-#                     _apply(p, idx, to_explode)
-#                     return to_explode
-#             elif p[idx] >= 10:
-#                 p[idx] = split(p[idx])
-#                 raise Stop()
-#
-#     try:
-#         _changed = bool(_helper(n, 1))
-#     except Stop:
-#         return n, True
-#     return n, _changed
-
-
 def add(n1, n2):
     """
     >>> unparse(add(parse_number("[[[[4, 3], 4], 4], [7, [[8, 4], 9]]]"), parse_number("[1, 1]")))
     [[[[0, 7], 4], [[7, 8], [6, 0]]], [8, 1]]
     >>> unparse(add(parse_number("[[[[7, 7], [7, 7]], [[8, 7], [8, 7]]], [[[7, 0], [7, 7]], 9]]"), parse_number("[[[[4, 2], 2], 6], [8, 7]]")))
+    [[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]]
+    >>> unparse(add(parse_number("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"), parse_number("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]")))
     [[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]]
     """
 
@@ -269,21 +215,14 @@ def add(n1, n2):
 
 
 if __name__ == "__main__":
-    """
-    n = functools.reduce(add, read())
-    pprint(magnitude(n))
-    """
-
     numbers = read()
+
+    n = functools.reduce(add, numbers)
+    print(unparse(n))
+    pprint(magnitude(n))
+
     # pprint(numbers)
-
-    pprint(numbers[-1])
-    print()
-    print()
-    pprint(list(dfs(numbers[-1])))
-
-    unparse(
-        add(
-            parse_number("[[[[4, 3], 4], 4], [7, [[8, 4], 9]]]"), parse_number("[1, 1]")
-        )
-    )
+    # pprint(numbers[-1])
+    # print()
+    # print()
+    # pprint(list(dfs(numbers[-1])))
