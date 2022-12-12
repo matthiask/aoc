@@ -61,8 +61,8 @@ def find_splittable(node):
     """
     >>> find_splittable(parse_number("[9,[2,1]]"))
     >>> p = Branch()
-    >>> p.left=Leaf(p, 11)
-    >>> p.right=Leaf(p, 13)
+    >>> p.left = Leaf(p, 11)
+    >>> p.right = Leaf(p, 13)
     >>> find_splittable(p) == p.left
     True
     """
@@ -97,16 +97,20 @@ def substitute_with(node, new):
 
 
 def explode(node):
-    substitute_with(node, Leaf(node.parent, 0))
+    left = node.left.value
+    right = node.right.value
 
-    # FIXME add left/right
+    # TODO Find first Leaf on the left and add "left"
+    # TODO Find first Leaf on the right and add "right"
+
+    substitute_with(node, Leaf(node.parent, 0))
 
 
 def split(node):
     """
     >>> p = Branch()
-    >>> p.left=Leaf(p, 11)
-    >>> p.right=Leaf(p, 8)
+    >>> p.left = Leaf(p, 11)
+    >>> p.right = Leaf(p, 8)
     >>> split(find_splittable(p))
     >>> [p.left.left.value, p.left.right.value]
     [5, 6]
