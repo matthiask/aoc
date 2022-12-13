@@ -96,6 +96,17 @@ def read(filename):
     return grid
 
 
+def test():
+    grid = read("14-test.txt")
+
+    found = 0
+    while find_position(grid):
+        found += 1
+
+    print(printify(grid, "."))
+    print("part1", found)
+
+
 def main():
     grid = read("14.txt")
 
@@ -109,3 +120,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # test()
