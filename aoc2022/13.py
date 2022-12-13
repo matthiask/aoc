@@ -1,4 +1,5 @@
-from itertools import zip_longest
+from functools import cmp_to_key
+from itertools import chain, zip_longest
 from pprint import pprint
 
 
@@ -54,6 +55,26 @@ def part1():
     pprint(sum(idx + 1 for idx, pair in enumerate(pairs) if check_ordering(*pair)))
 
 
+def cmp_ordering(left, right):
+    return -1 if check_ordering(left, right) else 1
+
+
+def part2():
+    all_packets = [
+        [[2]],
+        [[6]],
+    ] + list(chain.from_iterable(read("13.txt")))
+    # pprint(all_packets)
+
+    all_packets = sorted(all_packets, key=cmp_to_key(cmp_ordering))
+    # print(all_packets)
+
+    idx1 = 1 + all_packets.index([[2]])
+    idx2 = 1 + all_packets.index([[6]])
+    pprint(idx1 * idx2)
+
+
 if __name__ == "__main__":
     # test()
     part1()
+    part2()
