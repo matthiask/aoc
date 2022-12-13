@@ -35,8 +35,56 @@ def printify(image, default):
     )
 
 
+class OutOfBounds(Exception):
+    pass
+
+
+def find_position(grid):
+    x, y = START
+
+    (min_x, max_x, min_y, max_y) = bounds(grid)
+
+    def _straight_down():
+        nonlocal x, y
+        moved = False
+        while not grid.get((x, y + 1)):
+            moved = True
+            y += 1
+
+            if y > max_y:
+                # Yay, exceptions for control flow.
+                raise OutOfBounds()
+        return moved
+
+    def _diagonally(dx):
+        nonlocal x, y
+        moved = False
+        while grid.get((x, y + 1)) and not grid.get((x + dx, y + 1)):
+            moved = True
+            x += dx
+            y += 1
+        return moved
+
+    try:
+        while True:
+            _straight_down()
+            if _diagonally(-1):
+                continue
+            if _diagonally(1):
+                continue
+
+            grid[(x, y)] = "O"
+            return True
+
+    except OutOfBounds:
+        return False
+
+
+START = (500, 0)
+
+
 def read(filename):
-    grid = {(500, 0): "S"}
+    grid = {START: "S"}
 
     with open(filename) as f:
         for line in (line.strip() for line in f):
@@ -50,7 +98,13 @@ def read(filename):
 
 def main():
     grid = read("14.txt")
+
+    found = 0
+    while find_position(grid):
+        found += 1
+
     print(printify(grid, "."))
+    print("part1", found)
 
 
 if __name__ == "__main__":
