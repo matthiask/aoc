@@ -105,25 +105,27 @@ def find_explodable(node):
     explodable = None
     next_leaf = None
 
-    for n, depth in dfs(node):
+    dfs_iter = dfs(node)
+
+    for n, depth in dfs_iter:
         if (
             depth == 4
             and isinstance(n, Branch)
+            # The following is always true:
             # and isinstance(n.left, Leaf)
             # and isinstance(n.right, Leaf)
         ):
             explodable = n
+            break
 
         elif explodable is None and isinstance(n, Leaf):
             previous_leaf = n
 
-        elif (
-            explodable is not None
-            and n.parent is not explodable
-            and isinstance(n, Leaf)
-        ):
-            next_leaf = n
-            break
+    if explodable:
+        for n, depth in dfs_iter:
+            if n.parent is not explodable and isinstance(n, Leaf):
+                next_leaf = n
+                break
 
     if explodable:
         return previous_leaf, explodable, next_leaf
@@ -157,9 +159,11 @@ def explode(previous_leaf, node, next_leaf):
     >>> unparse(p)
     [[3, [2, [8, 0]]], [9, [5, [4, [3, 2]]]]]
     >>> p = parse("[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]")
+    >>> a,b,c = find_explodable(p); (a.value,unparse(b),c.value)
+    (0, [6, 7], 1)
     >>> explode(*find_explodable(p))
     >>> unparse(p)
-    [[[[0, 7], 4], [[7, 8], [0, [6, 7]]]], [1, 1]]
+    [[[[0, 7], 4], [[7, 8], [6, 0]]], [8, 1]]
     """
     if previous_leaf:
         previous_leaf.value += node.left.value
@@ -224,10 +228,10 @@ def add(n1, n2):
     [[[[0, 7], 4], [[7, 8], [6, 0]]], [8, 1]]
     >>> unparse(add(parse("[[[[7, 7], [7, 7]], [[8, 7], [8, 7]]], [[[7, 0], [7, 7]], 9]]"), parse("[[[[4, 2], 2], 6], [8, 7]]")))
     [[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]]
-    >>> unparse(add(parse("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"), parse("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]")))
+    >>> unparse(add(parse("[[[[7,8],[6,7]],[[6,8],[0,8]]],[[[7,7],[5,0]],[[5,5],[5,6]]]]"), parse("[[[5,[7,4]],7],1]")))
+    [[[[7, 7], [7, 7]], [[8, 7], [8, 7]]], [[[7, 0], [7, 7]], 9]]
+    >>> unparse(add(parse("[[[[7,7],[7,7]],[[8,7],[8,7]]],[[[7,0],[7,7]],9]]"), parse("[[[[4,2],2],6],[8,7]]")))
     [[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]]
-    >>> unparse(add(parse("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"), parse("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]")))
-    [[[[4, 0], [5, 6]], [[6, 6], [0, 6]]], [[[8, 9], [9, 9]], [[0, 7], [3, 3]]]]
     """
 
     assert n1.parent is None
@@ -237,7 +241,9 @@ def add(n1, n2):
     n1.parent = n2.parent = n
     n.left = n1
     n.right = n2
+    # print(unparse(n))
     simplify(n)
+    # print(unparse(n))
     return n
 
 
