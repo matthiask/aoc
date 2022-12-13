@@ -1,8 +1,5 @@
-import functools
 import re
-from dataclasses import dataclass
 from pprint import pprint
-from typing import Any, Union
 
 
 class Leaf:
@@ -122,7 +119,7 @@ def find_explodable(node):
             previous_leaf = n
 
     if explodable:
-        for n, depth in dfs_iter:
+        for n, _depth in dfs_iter:
             if n.parent is not explodable and isinstance(n, Leaf):
                 next_leaf = n
                 break
@@ -248,14 +245,12 @@ def add(n1, n2):
 
 
 if __name__ == "__main__":
-    """
-    n, *numbers = read("18-test.txt")
+    n, *numbers = read("18.txt")
     for n2 in numbers:
         n = add(n, n2)
 
-        print(unparse(n))
-        print(magnitude(n))
-    """
+        pprint(unparse(n))
+        pprint(magnitude(n))
 
     # n = functools.reduce(add, numbers)
     # print(unparse(n))
@@ -272,8 +267,3 @@ if __name__ == "__main__":
 
     # print(parse("[[7,[[8,4],9]],1]"))
     # print(unparse(simplify(parse("[[7,[[8,4],9]],1]"))))
-
-    p = parse(
-        "[[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]],[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]]"
-    )
-    simplify(p)
