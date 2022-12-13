@@ -1,3 +1,4 @@
+from ast import literal_eval
 from functools import cmp_to_key
 from itertools import chain, zip_longest
 from pprint import pprint
@@ -7,7 +8,7 @@ def read(filename):
     with open(filename) as f:
         pairs = f.read().strip().split("\n\n")
 
-    return [[eval(part) for part in pair.split("\n")] for pair in pairs]
+    return [[literal_eval(part) for part in pair.split("\n")] for pair in pairs]
 
 
 sentinel = object()
