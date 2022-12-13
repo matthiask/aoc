@@ -50,9 +50,7 @@ def enhance(image, algorithm, default):
     (min_x, max_x, min_y, max_y) = bounds(image)
 
     points = (
-        (x, y)
-        for y in range(min_y - 10, max_y + 10)
-        for x in range(min_x - 10, max_x + 10)
+        (x, y) for y in range(min_y - 2, max_y + 3) for x in range(min_x - 2, max_x + 3)
     )
 
     return {point: algorithm[_enhance_id(image, point, default)] for point in points}
@@ -80,3 +78,7 @@ if __name__ == "__main__":
     twice = enhance_loop(image, algorithm, 2)
     print(printify(twice))
     print(sum(1 for bit in twice.values() if bit))
+
+    fifty = enhance_loop(image, algorithm, 50)
+    print(printify(fifty))
+    print(sum(1 for bit in fifty.values() if bit))
