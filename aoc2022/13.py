@@ -12,7 +12,7 @@ def read(filename):
 sentinel = object()
 
 
-def check(left_list, right_list):
+def check_ordering(left_list, right_list):
     # print(f"Checking {left_list} vs {right_list}...")
     for left, right in zip_longest(left_list, right_list, fillvalue=sentinel):
         if left is sentinel:
@@ -35,7 +35,7 @@ def check(left_list, right_list):
             if not isinstance(right, list):
                 right = [right]
 
-            result = check(left, right)
+            result = check_ordering(left, right)
             if result in {True, False}:
                 return result
 
@@ -44,14 +44,14 @@ def test():
     pairs = read("13-test.txt")
 
     for pair in pairs:
-        pprint((check(*pair), pair))
+        pprint((check_ordering(*pair), pair))
         print()
     # pprint(pairs)
 
 
 def part1():
     pairs = read("13.txt")
-    pprint(sum(idx + 1 for idx, pair in enumerate(pairs) if check(*pair)))
+    pprint(sum(idx + 1 for idx, pair in enumerate(pairs) if check_ordering(*pair)))
 
 
 if __name__ == "__main__":
