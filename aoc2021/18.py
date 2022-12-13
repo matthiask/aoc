@@ -117,7 +117,11 @@ def find_explodable(node):
         elif explodable is None and isinstance(n, Leaf):
             previous_leaf = n
 
-        elif explodable is not None and n.parent is not explodable and isinstance(n, Leaf):
+        elif (
+            explodable is not None
+            and n.parent is not explodable
+            and isinstance(n, Leaf)
+        ):
             next_leaf = n
             break
 
@@ -263,5 +267,7 @@ if __name__ == "__main__":
     # print(parse("[[7,[[8,4],9]],1]"))
     # print(unparse(simplify(parse("[[7,[[8,4],9]],1]"))))
 
-    p = parse("[[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]],[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]]")
+    p = parse(
+        "[[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]],[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]]"
+    )
     simplify(p)

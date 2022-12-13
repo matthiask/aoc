@@ -1,5 +1,6 @@
 import string
 
+
 priorities = {
     thing: index + 1
     for index, thing in enumerate(string.ascii_lowercase + string.ascii_uppercase)

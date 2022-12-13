@@ -21,7 +21,7 @@ def hex_digit_to_4_binary_bits(hex):
     >>> hex_digit_to_4_binary_bits("0")
     '0000'
     """
-    return "{:>04b}".format(int(hex, 16))
+    return f"{int(hex, 16):>04b}"
 
 
 class EOF(Exception):
@@ -103,21 +103,21 @@ class OperatorMaximum(Operator):
 @dataclass
 class OperatorGreaterThan(Operator):
     def value(self):
-        v1, v2 = [packet.value() for packet in self.subpackets]
+        v1, v2 = (packet.value() for packet in self.subpackets)
         return int(v1 > v2)
 
 
 @dataclass
 class OperatorLessThan(Operator):
     def value(self):
-        v1, v2 = [packet.value() for packet in self.subpackets]
+        v1, v2 = (packet.value() for packet in self.subpackets)
         return int(v1 < v2)
 
 
 @dataclass
 class OperatorEqual(Operator):
     def value(self):
-        v1, v2 = [packet.value() for packet in self.subpackets]
+        v1, v2 = (packet.value() for packet in self.subpackets)
         return int(v1 == v2)
 
 

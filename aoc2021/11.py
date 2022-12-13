@@ -24,7 +24,7 @@ def surrounding(point):
     x, y = point
     deltas = [(1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1)]
     points = [(x + dx, y + dy) for dx, dy in deltas]
-    return set((x, y) for (x, y) in points if 0 <= x < max_x and 0 <= y < max_y)
+    return {(x, y) for (x, y) in points if 0 <= x < max_x and 0 <= y < max_y}
 
 
 def enough_energy_to_flash(energy):

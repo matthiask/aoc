@@ -1,6 +1,6 @@
 import operator
-from dataclasses import dataclass
 from collections import defaultdict
+from dataclasses import dataclass
 from functools import reduce
 from pprint import pprint
 

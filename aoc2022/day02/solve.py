@@ -4,6 +4,7 @@
 
 from pprint import pprint
 
+
 choice_scores = {
     "A": 1,
     "B": 2,

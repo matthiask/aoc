@@ -3,6 +3,7 @@ from collections import defaultdict
 from itertools import repeat
 from pprint import pprint
 
+
 with open("05.txt") as f:
     coordinates = [
         [int(v) for v in re.findall(r"([0-9]+)", line.strip())] for line in f
