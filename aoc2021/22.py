@@ -1,5 +1,5 @@
-import datetime as dt
 import re
+import time
 from dataclasses import dataclass
 from itertools import chain, product
 from pprint import pprint
@@ -214,7 +214,7 @@ def part2():
             raise Exception()
 
         step += 1
-        print(step, len(on), dt.datetime.now())
+        print(step, len(on), time.process_time())
 
         on = sorted(on, key=lambda cube: cube.volume, reverse=True)
 
