@@ -1,4 +1,6 @@
+import copy
 import re
+from itertools import product
 from pprint import pprint
 
 
@@ -244,6 +246,15 @@ def add(n1, n2):
     return n
 
 
+def largest():
+    numbers = read("18.txt")
+    magnitudes = set()
+    for n1, n2 in product(numbers, numbers):
+        magnitudes.add(magnitude(add(copy.deepcopy(n1), copy.deepcopy(n2))))
+        magnitudes.add(magnitude(add(copy.deepcopy(n2), copy.deepcopy(n1))))
+    return max(magnitudes)
+
+
 if __name__ == "__main__":
     n, *numbers = read("18.txt")
     for n2 in numbers:
@@ -251,6 +262,8 @@ if __name__ == "__main__":
 
         pprint(unparse(n))
         pprint(magnitude(n))
+
+    pprint(largest())
 
     # n = functools.reduce(add, numbers)
     # print(unparse(n))
