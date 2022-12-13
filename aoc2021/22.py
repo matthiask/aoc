@@ -1,8 +1,21 @@
+"""
+https://github.com/tginsberg/advent-2021-kotlin/blob/master/src/main/kotlin/com/ginsberg/advent2021/Day22.kt
+
+Nice alternative solution
+
+add(c1, c2) =>
+
+    if intersects(c1, c2)
+        return [c1, c2, -(intersection(c1, c2))]
+    return [c1, c2]
+
+That is, add a negative volume for intersections. Flip flop.
+"""
+
 import re
 import time
 from dataclasses import dataclass
 from itertools import chain, product
-from pprint import pprint
 from typing import Tuple
 
 
