@@ -30,7 +30,7 @@ round_scores = {
 
 
 def read():
-    with open("input.txt") as f:
+    with open("02.txt") as f:
         lines = f.readlines()
     return [tuple(line.strip().split(" ")) for line in lines]
 

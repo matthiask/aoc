@@ -6,7 +6,7 @@ def find_distinct_characters_of_length(signal, length):
 
 
 if __name__ == "__main__":
-    with open("input.txt") as f:
+    with open("06.txt") as f:
         signal = f.read()
 
     print(find_distinct_characters_of_length(signal, 4))

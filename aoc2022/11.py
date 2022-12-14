@@ -66,7 +66,7 @@ def parse_monkey(lines, *, relief):
 
 
 def parse(*, relief):
-    with open("input.txt") as f:
+    with open("11.txt") as f:
         lines = [line.strip() for line in f]
     while lines:
         yield parse_monkey(lines, relief=relief)

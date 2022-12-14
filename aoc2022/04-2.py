@@ -2,7 +2,7 @@ import re
 
 
 def parse():
-    with open("input.txt") as f:
+    with open("04.txt") as f:
         for line in f:
             yield [int(part) for part in re.split(r"[-,]", line.strip())]
 

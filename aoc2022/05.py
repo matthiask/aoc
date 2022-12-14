@@ -33,7 +33,7 @@ def parse_ops(lines):
 
 
 def parse():
-    with open("input.txt") as f:
+    with open("05.txt") as f:
         lines = deque(line.strip() for line in f)
 
     return parse_stacks(lines), list(parse_ops(lines))

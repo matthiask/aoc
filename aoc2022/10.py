@@ -69,7 +69,7 @@ def part2(ops):
 
 
 if __name__ == "__main__":
-    with open("input.txt") as f:
+    with open("10.txt") as f:
         ops = list(map(parse, f))
 
     # pprint(list(execute(ops)))

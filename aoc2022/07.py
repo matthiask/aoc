@@ -44,7 +44,7 @@ def part2():
 if __name__ == "__main__":
     from pprint import pprint
 
-    with open("input.txt") as f:
+    with open("07.txt") as f:
         lines = [line.strip() for line in f]
 
     parse(lines)

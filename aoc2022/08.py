@@ -110,7 +110,7 @@ def part2(forest):
 
 
 if __name__ == "__main__":
-    with open("input.txt") as f:
+    with open("08.txt") as f:
         forest = [list(map(int, list(line.strip()))) for line in f]
 
     # pprint(forest)

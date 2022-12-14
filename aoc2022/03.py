@@ -8,7 +8,7 @@ priorities = {
 
 
 def read():
-    with open("input.txt") as f:
+    with open("03.txt") as f:
         for line in f:
             yield line.strip()
 

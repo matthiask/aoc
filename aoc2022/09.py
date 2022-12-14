@@ -107,7 +107,7 @@ def part2(head_moves):
 
 
 def run():
-    with open("input.txt") as f:
+    with open("09.txt") as f:
         head_moves = list(map(_parse_move, f))
     # pprint(head_moves)
 

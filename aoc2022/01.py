@@ -1,5 +1,5 @@
 def read():
-    with open("input") as f:
+    with open("01.txt") as f:
         lines = f.read().splitlines()
 
     group = []
