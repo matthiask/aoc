@@ -58,12 +58,11 @@ def find_position(grid):
 
     def _diagonally(dx):
         nonlocal x, y
-        moved = False
-        while grid.get((x, y + 1)) and not grid.get((x + dx, y + 1)):
-            moved = True
+        if grid.get((x, y + 1)) and not grid.get((x + dx, y + 1)):
             x += dx
             y += 1
-        return moved
+            return True
+        return False
 
     try:
         while True:
@@ -118,6 +117,33 @@ def main():
     print("part1", found)
 
 
+def main_with_extended_floor():
+    grid = read("14.txt")
+    grid.pop(START)
+
+    (min_x, max_x, min_y, max_y) = bounds(grid)
+
+    height = max_y - min_y
+    # The floor isn't infinite, extending it with (height+50) is enough.
+    for x in range_inclusive(min_x - height - 50, max_x + height + 50):
+        grid[(x, max_y + 2)] = "#"
+
+    print(printify(grid, "."))
+
+    found = 0
+    while find_position(grid):
+        found += 1
+        if grid.get(START):
+            break
+
+        if found % 1000 == 0:
+            print("Found", found)
+
+    print(printify(grid, "."))
+    print("part2", found)
+
+
 if __name__ == "__main__":
+    test()
     main()
-    # test()
+    main_with_extended_floor()
