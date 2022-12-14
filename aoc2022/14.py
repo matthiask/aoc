@@ -35,48 +35,24 @@ def printify(image, default):
     )
 
 
-class OutOfBounds(Exception):
-    pass
-
-
 def find_position(grid):
     x, y = START
 
     (min_x, max_x, min_y, max_y) = bounds(grid)
 
-    def _straight_down():
-        nonlocal x, y
-        moved = False
-        while not grid.get((x, y + 1)):
-            moved = True
-            y += 1
+    while True:
+        for dx in (0, -1, 1):
+            if not grid.get((x + dx, y + 1)):
+                x += dx
+                y += 1
 
-            if y > max_y:
-                # Yay, exceptions for control flow.
-                raise OutOfBounds()
-        return moved
+                if y > max_y:
+                    return False
 
-    def _diagonally(dx):
-        nonlocal x, y
-        if grid.get((x, y + 1)) and not grid.get((x + dx, y + 1)):
-            x += dx
-            y += 1
-            return True
-        return False
-
-    try:
-        while True:
-            _straight_down()
-            if _diagonally(-1):
-                continue
-            if _diagonally(1):
-                continue
-
+                break
+        else:
             grid[(x, y)] = "O"
             return True
-
-    except OutOfBounds:
-        return False
 
 
 START = (500, 0)
