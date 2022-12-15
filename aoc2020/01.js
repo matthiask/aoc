@@ -220,7 +220,7 @@ function part2() {
   for (let i=0; i<len; ++i) {
     for (let j=i + 1; j<len; ++j) {
       for (let k=j + 1; k<len; ++k) {
-        if (i !== j && i !== k && j !== k && numbers[i] + numbers[j] + numbers[k] === 2020) {
+        if (numbers[i] + numbers[j] + numbers[k] === 2020) {
           console.log("part2", numbers[i] * numbers[j] * numbers[k])
           return
         }
