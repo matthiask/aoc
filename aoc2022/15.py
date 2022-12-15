@@ -108,6 +108,7 @@ def part2(filename, x_range, y_range):
 
     # Find points "just outside" a selection of sensors
     for initial_sensor in range(len(sensors)):
+        print(f"Checking with initial sensor {initial_sensor}...")
         maybe = {
             point
             for point in just_outside(sensors[initial_sensor])
@@ -115,6 +116,7 @@ def part2(filename, x_range, y_range):
             and y_range[0] <= point[1] <= y_range[1]
         }
         for sensor in sensors:
+            print(f"Checking against sensor {sensor}...")
             new_maybe = maybe & just_outside(sensor)
             if new_maybe:
                 maybe = new_maybe
