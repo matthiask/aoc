@@ -82,7 +82,7 @@ def just_outside(sensor):
     return outside
 
 
-def part2(filename):
+def part2(filename, x_range, y_range):
     """
 
     Short research:
@@ -94,16 +94,53 @@ def part2(filename):
 
     """
 
+    """
+
+    We can take advantage of the fact that we _know_ that there's only one solution.
+
+    The solution doesn't have to be "just outside" *all* sensors' manhattan distances but only be just outside some of them, and NOT be inside any of them.
+
+    """
+
     sensors = read(filename)
-    maybe = just_outside(sensors[0])
-    for sensor in sensors[1:]:
-        maybe &= just_outside(sensor)
-    return maybe
+
+    possible_solutions = set()
+
+    # Find points "just outside" a selection of sensors
+    for initial_sensor in range(len(sensors)):
+        maybe = {
+            point
+            for point in just_outside(sensors[initial_sensor])
+            if x_range[0] <= point[0] <= x_range[1]
+            and y_range[0] <= point[1] <= y_range[1]
+        }
+        for sensor in sensors:
+            new_maybe = maybe & just_outside(sensor)
+            if new_maybe:
+                maybe = new_maybe
+        if len(maybe) == 1:
+            possible_solutions |= maybe
+
+    print(possible_solutions)
+
+    # Find points not inside any of the manhattan distances
+    for point in possible_solutions:
+        any_inside = [
+            manhattan_distance(sensor.origin, sensor.beacon)
+            >= manhattan_distance(sensor.origin, point)
+            for sensor in sensors
+        ]
+        print(point, any_inside)
+        if not any(any_inside):
+            print(point)
+            return point[0] * 4000000 + point[1]
+            # return point
 
 
 if __name__ == "__main__":
     # part1()
 
     print("part1 test", len(exclusions_at_y("15-test.txt", 10)))
-    print("part2 test", part2("15-test.txt"))
+    print("part2 test", part2("15-test.txt", (0, 20), (0, 20)))
     print("part1", len(exclusions_at_y("15.txt", 2000000)))
+    print("part2", part2("15.txt", (0, 4000000), (0, 4000000)))
