@@ -327,7 +327,7 @@ const forest = input.split("\n").map((line) => Array.from(line).map((character) 
 const modX = forest[0].length
 const maxY = forest.length
 
-console.log(forest)
+// console.log(forest)
 
 function hasTreeAt(x, y) {
   return forest[y][x % modX]
