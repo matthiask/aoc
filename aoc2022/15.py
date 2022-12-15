@@ -62,8 +62,48 @@ def exclusions_at_y(filename, y_of_interest):
     return exclusions_at_y - occupied_at_y
 
 
+def just_outside(sensor):
+    """
+    >>> sorted(just_outside(Sensor((0, 0), (1, 0))))
+    [(-2, 0), (-1, -1), (-1, 1), (0, -2), (0, 2), (1, -1), (1, 1), (2, 0)]
+    """
+    outside = set()
+    d = manhattan_distance(sensor.origin, sensor.beacon) + 1  # just outside
+    x, y = sensor.origin
+    for i in range(d + 1):  # range_inclusive
+        # NE
+        outside.add((x + i, y - d + i))
+        # SE
+        outside.add((x + i, y + d - i))
+        # SW
+        outside.add((x - d + i, y + i))
+        # NW
+        outside.add((x - d + i, y - i))
+    return outside
+
+
+def part2(filename):
+    """
+
+    Short research:
+
+    https://doc.sagemath.org/html/en/reference/calculus/sage/symbolic/relation.html#sage.symbolic.relation.solve_ineq
+    https://en.wikipedia.org/wiki/Fourier%E2%80%93Motzkin_elimination
+
+    I think I give up 😂
+
+    """
+
+    sensors = read(filename)
+    maybe = just_outside(sensors[0])
+    for sensor in sensors[1:]:
+        maybe &= just_outside(sensor)
+    return maybe
+
+
 if __name__ == "__main__":
     # part1()
 
     print("part1 test", len(exclusions_at_y("15-test.txt", 10)))
+    print("part2 test", part2("15-test.txt"))
     print("part1", len(exclusions_at_y("15.txt", 2000000)))
