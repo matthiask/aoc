@@ -96,17 +96,19 @@ def part2(filename, x_range, y_range):
 
     """
 
-    We can take advantage of the fact that we _know_ that there's only one solution.
+    Never give up 😅
 
-    The solution doesn't have to be "just outside" *all* sensors' manhattan distances but only be just outside some of them, and NOT be inside any of them.
+    We can take advantage of the fact that we _know_ that there's only one
+    solution.
+
+    We first find all points "just outside" one sensor which are still inside
+    the defined range, and check that those points are not inside the manhattan
+    distance of any sensors. If we get exactly one point we're finished.
 
     """
 
     sensors = read(filename)
 
-    possible_solutions = set()
-
-    # Find points "just outside" a selection of sensors
     for initial_sensor in range(len(sensors)):
         print(f"Checking with initial sensor {initial_sensor}...")
         maybe = {
@@ -115,28 +117,19 @@ def part2(filename, x_range, y_range):
             if x_range[0] <= point[0] <= x_range[1]
             and y_range[0] <= point[1] <= y_range[1]
         }
-        for sensor in sensors:
-            print(f"Checking against sensor {sensor}...")
-            new_maybe = maybe & just_outside(sensor)
-            if new_maybe:
-                maybe = new_maybe
+        maybe = {
+            point
+            for point in maybe
+            if all(
+                manhattan_distance(sensor.origin, sensor.beacon)
+                < manhattan_distance(sensor.origin, point)
+                for sensor in sensors
+            )
+        }
         if len(maybe) == 1:
-            possible_solutions |= maybe
-
-    print(possible_solutions)
-
-    # Find points not inside any of the manhattan distances
-    for point in possible_solutions:
-        any_inside = [
-            manhattan_distance(sensor.origin, sensor.beacon)
-            >= manhattan_distance(sensor.origin, point)
-            for sensor in sensors
-        ]
-        print(point, any_inside)
-        if not any(any_inside):
+            point = list(maybe)[0]
             print(point)
             return point[0] * 4000000 + point[1]
-            # return point
 
 
 if __name__ == "__main__":
