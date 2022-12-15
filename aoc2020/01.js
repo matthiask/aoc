@@ -206,8 +206,8 @@ const numbers = input.split("\n").map(Number),
   len = numbers.length
 
 function part1() {
-  for (let i=0; i<len; ++i) {
-    for (let j=i + 1; j<len; ++j) {
+  for (let i = 0; i < len; ++i) {
+    for (let j = i + 1; j < len; ++j) {
       if (numbers[i] + numbers[j] === 2020) {
         console.log("part1", numbers[i] * numbers[j])
         return
@@ -217,9 +217,9 @@ function part1() {
 }
 
 function part2() {
-  for (let i=0; i<len; ++i) {
-    for (let j=i + 1; j<len; ++j) {
-      for (let k=j + 1; k<len; ++k) {
+  for (let i = 0; i < len; ++i) {
+    for (let j = i + 1; j < len; ++j) {
+      for (let k = j + 1; k < len; ++k) {
         if (numbers[i] + numbers[j] + numbers[k] === 2020) {
           console.log("part2", numbers[i] * numbers[j] * numbers[k])
           return

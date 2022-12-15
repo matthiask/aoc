@@ -323,7 +323,9 @@ const input = `\
 ..#.##........##...........#.#.
 ....##.#..###.#.........#...##.`
 
-const forest = input.split("\n").map((line) => Array.from(line).map((character) => character === "#"))
+const forest = input
+  .split("\n")
+  .map((line) => Array.from(line).map((character) => character === "#"))
 const modX = forest[0].length
 const maxY = forest.length
 
@@ -335,7 +337,7 @@ function hasTreeAt(x, y) {
 
 function count(xv, yv) {
   let encountered = 0
-  for (let i=0;; ++i) {
+  for (let i = 0; ; ++i) {
     if (i * yv >= maxY) {
       break
     }
@@ -348,4 +350,7 @@ function count(xv, yv) {
 
 console.log("part1", count(3, 1))
 
-console.log("part2", count(1, 1) * count(3, 1) * count(5, 1) * count(7, 1) * count(1, 2))
+console.log(
+  "part2",
+  count(1, 1) * count(3, 1) * count(5, 1) * count(7, 1) * count(1, 2),
+)
