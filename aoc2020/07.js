@@ -68,5 +68,22 @@ const part1 = (rules) => {
   console.log("part1", colors, colors.size)
 }
 
+const part2 = (rules) => {
+  rules = Object.fromEntries(rules.map((rule) => [rule.color, rule.contains]))
+  // console.log(rules)
+  const _recurse = (color) => {
+    if (!rules[color]) return 0
+    return rules[color].reduce(
+      (a, b) => a + b.count * (1 + _recurse(b.color)),
+      0,
+    )
+  }
+
+  console.log("part2", _recurse("shiny gold"))
+}
+
 part1(parse(test))
 part1(parse(input))
+
+part2(parse(test))
+part2(parse(input))
