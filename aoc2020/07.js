@@ -24,3 +24,6 @@ const rules = input
   })
 
 console.log(JSON.stringify(rules))
+
+// const modifier = "shiny"
+// const color = "gold"
