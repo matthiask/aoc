@@ -6,16 +6,21 @@ const rules = input
   .split("\n")
   .filter(Boolean)
   .map((rule) => {
-    const matches = rule.match(/^(.*?) bags contain (.*)$/, rule)
-    const bag = matches[1]
+    const matches = rule.match(/^(.+) (.+) bags contain (.*)$/, rule)
+    const modifier = matches[1]
+    const color = matches[2]
     const contains =
-      matches[2] == "no other bags."
+      matches[3] == "no other bags."
         ? []
-        : matches[2].split(", ").map((bag) => {
-            const matches = bag.match(/(\d+) (.+?) bag/)
-            return { count: Number(matches[1]), bag: matches[2] }
+        : matches[3].split(", ").map((bag) => {
+            const matches = bag.match(/(\d+) (.+) (.+) bag/)
+            return {
+              count: Number(matches[1]),
+              modifier: matches[2],
+              color: matches[3],
+            }
           })
-    return { bag, contains }
+    return { modifier, color, contains }
   })
 
 console.log(JSON.stringify(rules))
