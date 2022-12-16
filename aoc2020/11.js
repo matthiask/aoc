@@ -40,7 +40,7 @@ const adjacentOccupiedCount = (grid, x, y) => {
   return count
 }
 
-const occupiedSeatsIn8Directions = (grid, x, y) => {
+const occupiedSeatsIn8DirectionsOver = (grid, x, y, over) => {
   const yMax = grid.length
   const xMax = grid[0].length
   const max = Math.max(yMax, xMax)
@@ -50,7 +50,6 @@ const occupiedSeatsIn8Directions = (grid, x, y) => {
 
   let count = 0
   for (let i = 1; i <= max; ++i) {
-    console.log({ x, y, count, i, max })
     // N
     count += oneIfOccupied(grid, x, y - i)
     // NE
@@ -67,8 +66,9 @@ const occupiedSeatsIn8Directions = (grid, x, y) => {
     count += oneIfOccupied(grid, x - i, y)
     // NW
     count += oneIfOccupied(grid, x - i, y - i)
+    if (count > over) return true
   }
-  return count
+  return count > over
 }
 
 const round = (grid) => {
@@ -123,11 +123,14 @@ const round2 = (grid) => {
       if (character == ".") {
         return character
       } else if (character == "L") {
-        return occupiedSeatsIn8Directions(grid, x, y) == 0 && (changed = true)
-          ? "#"
-          : "L"
+        if (occupiedSeatsIn8DirectionsOver(grid, x, y, 0)) {
+          return "L"
+        } else {
+          changed = true
+          return "#"
+        }
       } else if (character == "#") {
-        return occupiedSeatsIn8Directions(grid, x, y) >= 5 && (changed = true)
+        return occupiedSeatsIn8DirectionsOver(grid, x, y, 5) && (changed = true)
           ? "L"
           : "#"
       }
@@ -149,5 +152,5 @@ const part2 = (grid) => {
 console.log("part1 test", part1(parse(test)))
 console.log("part1", part1(parse(input)))
 
-console.log("part2 test", part2(parse(test)))
+// console.log("part2 test", part2(parse(test)))
 console.log("part2", part2(parse(input)))
