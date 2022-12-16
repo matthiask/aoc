@@ -2,7 +2,6 @@ import heapq
 import re
 from collections import defaultdict, namedtuple
 from itertools import product
-from pprint import pprint
 
 
 Valve = namedtuple("Valve", "name flow_rate tunnels_to")
@@ -21,35 +20,6 @@ def read(filename):
             name: Valve(name, int(flow_rate), tunnels_to.split(", "))
             for name, flow_rate, tunnels_to in groups
         }
-
-
-MINUTES = 30
-PER_MOVE = 1
-PER_RELEASE = 1
-START = "AA"
-
-
-def _valve(valves, tunnel_costs, name, open_valves, release, minutes):
-    # print(name, open_valves, release, minutes)
-    # Any action will take a minute; if we have only one minute left we can stop.
-    if minutes <= 1:
-        return
-
-    next_open_valves = open_valves + (name,)
-    next_release = release + minutes * valves[name].flow_rate
-    # print(next_release, sorted(next_open_valves))
-    yield next_release
-
-    for to, costs in tunnel_costs[name]:
-        if to not in open_valves:
-            yield from _valve(
-                valves,
-                tunnel_costs,
-                to,
-                next_open_valves,
-                next_release,
-                minutes - costs - 1,
-            )
 
 
 def shortest_path_length(valves, start, end):
@@ -77,6 +47,29 @@ def determine_tunnel_costs(valves):
     return paths
 
 
+def _valve(valves, tunnel_costs, name, open_valves, release, minutes):
+    # print(name, open_valves, release, minutes)
+    # Any action will take a minute; if we have only one minute left we can stop.
+    if minutes <= 1:
+        return
+
+    next_open_valves = open_valves + (name,)
+    next_release = release + minutes * valves[name].flow_rate
+    # print(next_release, sorted(next_open_valves))
+    yield next_release
+
+    for to, costs in tunnel_costs[name]:
+        if to not in open_valves:
+            yield from _valve(
+                valves,
+                tunnel_costs,
+                to,
+                next_open_valves,
+                next_release,
+                minutes - costs - 1,
+            )
+
+
 def part1(valves, start, minutes):
     tunnel_costs = determine_tunnel_costs(valves)
     max_release = set(_valve(valves, tunnel_costs, start, (), 0, 30))
@@ -86,9 +79,10 @@ def part1(valves, start, minutes):
 
 
 if __name__ == "__main__":
-    valves = read("16-test.txt")
-    pprint(valves)
-    pprint(determine_tunnel_costs(valves))
-    print()
-    print("part1 test", part1(read("16-test.txt"), "AA", 30))
+    # from pprint import pprint
+    # valves = read("16-test.txt")
+    # pprint(valves)
+    # pprint(determine_tunnel_costs(valves))
+    # print()
+    # print("part1 test", part1(read("16-test.txt"), "AA", 30))
     print("part1", part1(read("16.txt"), "AA", 30))
