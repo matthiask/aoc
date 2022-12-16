@@ -86,14 +86,16 @@ def part2(valves):
 
     tunnel_costs = determine_tunnel_costs(valves)
     max_releases = [
-        res for res in _valve(valves, tunnel_costs, "AA", (), 0, 26) if res[0]
+        (release, open_valves - {"AA"})
+        for release, open_valves in _valve(valves, tunnel_costs, "AA", (), 0, 26)
+        if release
     ]
 
     # pprint(max_releases)
 
     disjoint_releases = []
     for res1, res2 in product(max_releases, max_releases):
-        if (res1[1] - {"AA"}).isdisjoint(res2[1]):
+        if res1[1].isdisjoint(res2[1]):
             disjoint_releases.append(res1[0] + res2[0])
 
     return max(disjoint_releases)
