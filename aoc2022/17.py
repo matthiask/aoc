@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field, replace
 from itertools import cycle
+from time import monotonic
+from typing import List
 
 
 rocks = """\
@@ -35,7 +37,7 @@ RIGHT = 1
 @dataclass
 class Rock:
     pattern: str
-    bits: list[int]
+    bits: List[int]
 
     def shift(self, direction):
         if direction == "<":
@@ -51,7 +53,7 @@ class Rock:
 
 @dataclass
 class Chamber:
-    bits: list[int] = field(default_factory=list)
+    bits: List[int] = field(default_factory=list)
 
     @property
     def rows(self):
@@ -112,7 +114,7 @@ if __name__ == "__main__":
 
     chamber = Chamber()
     rocks = parse_rocks(rocks)
-    jets = parse_jets("17-test.txt")
+    jets = parse_jets("17.txt")
 
     pprint(rocks)
     pprint(jets)
@@ -128,3 +130,21 @@ if __name__ == "__main__":
 
     print(chamber.prettify())
     print(chamber.rows)
+
+    start = monotonic()
+    count = 1000000000000
+    for i in range(count):
+        rock = next(rocks)
+        chamber.fall_one(rock, jets)
+
+        if i and i % 1000000 == 0:
+            elapsed = monotonic() - start
+            estimate = elapsed / i * count
+            print(
+                f"{i} / {count} ({i / count * 100:.2f}%), elapsed {elapsed:.2f}s, estimated {estimate:.2f}s"
+            )
+    print(chamber.rows)
+
+
+# Gave up on the second part, see https://www.reddit.com/r/adventofcode/comments/znykq2/2022_day_17_solutions/
+# The dumb solution would require almost a month if not running out of memory.
