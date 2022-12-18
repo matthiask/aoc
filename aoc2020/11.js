@@ -40,32 +40,36 @@ const adjacentOccupiedCount = (grid, x, y) => {
   return count
 }
 
+const offsets = (i) => [
+  [0, -i],
+  [i, -i],
+  [i, 0],
+  [i, i],
+  [0, i],
+  [-i, i],
+  [-i, 0],
+  [-i, -i],
+]
+
 const occupiedSeatsIn8DirectionsOver = (grid, x, y, over) => {
   const yMax = grid.length
   const xMax = grid[0].length
   const max = Math.max(yMax, xMax)
 
-  const oneIfOccupied = (grid, ax, ay) =>
-    ax >= 0 && ax < xMax && ay >= 0 && ay < yMax && grid[ay][ax] == "#" ? 1 : 0
+  const char = (x, y) => (grid[y] ? grid[y][x] : ".")
 
+  let seatSeen = [false, false, false, false, false, false, false, false]
   let count = 0
   for (let i = 1; i <= max; ++i) {
-    // N
-    count += oneIfOccupied(grid, x, y - i)
-    // NE
-    count += oneIfOccupied(grid, x + i, y - i)
-    // E
-    count += oneIfOccupied(grid, x + i, y)
-    // SE
-    count += oneIfOccupied(grid, x + i, y + i)
-    // S
-    count += oneIfOccupied(grid, x, y + i)
-    // SW
-    count += oneIfOccupied(grid, x - i, y + i)
-    // W
-    count += oneIfOccupied(grid, x - i, y)
-    // NW
-    count += oneIfOccupied(grid, x - i, y - i)
+    offsets(i).forEach(([dx, dy], idx) => {
+      if (seatSeen[idx]) return
+      const ax = x + dx,
+        ay = y + dy,
+        c = char(ax, ay)
+      if (c == ".") return
+      seatSeen[idx] = true
+      count += c == "#" ? 1 : 0
+    })
     if (count > over) return true
   }
   return count > over
@@ -130,7 +134,7 @@ const round2 = (grid) => {
           return "#"
         }
       } else if (character == "#") {
-        return occupiedSeatsIn8DirectionsOver(grid, x, y, 5) && (changed = true)
+        return occupiedSeatsIn8DirectionsOver(grid, x, y, 4) && (changed = true)
           ? "L"
           : "#"
       }
@@ -146,11 +150,12 @@ const part2 = (grid) => {
       console.debug(printify(grid))
       return occupiedSeats(grid)
     }
+    // console.log("looped once", new Date())
     grid = newGrid
   }
 }
 console.log("part1 test", part1(parse(test)))
 console.log("part1", part1(parse(input)))
 
-// console.log("part2 test", part2(parse(test)))
+console.log("part2 test", part2(parse(test)))
 console.log("part2", part2(parse(input)))
