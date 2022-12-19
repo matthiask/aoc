@@ -31,20 +31,23 @@ const parse = (input, zero) => {
   return points
 }
 
+// https://stackoverflow.com/a/43053803
+const cartesian = (...a) =>
+  a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())))
+
 const neighbors = (point) => {
   const neighbors = []
   const values = unkey(point)
 
   const pool = [-1, 0, 1]
-  const idxFun = values.map(
-    (_, idx) => (i) => pool[Math.floor(i / Math.pow(pool.length, idx)) % 3],
-  )
-  for (let i = 0; i < Math.pow(pool.length, values.length); ++i) {
-    neighbors.push(key(...idxFun.map((fn, idx) => values[idx] + fn(i))))
-  }
-  neighbors.splice(13, 1)
+  const deltas = cartesian(...values.map((_) => pool))
+
+  deltas.forEach((delta) => {
+    if (!delta.every((idx) => !idx))
+      neighbors.push(key(...values.map((v, idx) => v + delta[idx])))
+  })
+  // console.debug({ point, neighbors, values, deltas })
   return neighbors
-  // console.debug({ point, neighbors })
   // return [...neighbors.slice(0, 13), ...neighbors.slice(14)]
 }
 
@@ -74,31 +77,40 @@ const ranges = (points) => {
     return [Math.min(...dimensionValues), Math.max(...dimensionValues)]
   }
 
-  return values.map((_, idx) => range(idx))
+  // console.log({ values })
+  return values[0].map((_, idx) => range(idx))
+}
+
+const rangeInclusive = (start, end) => {
+  const r = []
+  for (; start <= end; ++start) {
+    r.push(start)
+  }
+  // console.debug({ start, end, r })
+  return r
 }
 
 const cycle = (points) => {
-  const [xr, yr, zr] = ranges(points)
   const newPoints = new Set()
 
-  for (let x = xr[0] - 1; x <= xr[1] + 1; x++) {
-    for (let y = yr[0] - 1; y <= yr[1] + 1; y++) {
-      for (let z = zr[0] - 1; z <= zr[1] + 1; z++) {
-        const point = key(x, y, z)
-        const activeNeighbors = neighbors(point).filter((p) =>
-          points.has(p),
-        ).length
-        if (points.has(point)) {
-          // Active
-          if (2 <= activeNeighbors && activeNeighbors <= 3) {
-            newPoints.add(point)
-          }
-        } else {
-          // Inactive
-          if (activeNeighbors === 3) {
-            newPoints.add(point)
-          }
-        }
+  const allRanges = ranges(points).map((r) =>
+    rangeInclusive(r[0] - 1, r[1] + 1),
+  )
+  // console.debug(allRanges)
+  const allPoints = cartesian(...allRanges).map((point) => key(point))
+  // console.debug(allPoints)
+
+  for (let point of allPoints) {
+    const activeNeighbors = neighbors(point).filter((p) => points.has(p)).length
+    if (points.has(point)) {
+      // Active
+      if (2 <= activeNeighbors && activeNeighbors <= 3) {
+        newPoints.add(point)
+      }
+    } else {
+      // Inactive
+      if (activeNeighbors === 3) {
+        newPoints.add(point)
       }
     }
   }
@@ -108,7 +120,7 @@ const cycle = (points) => {
 
 const part1 = (input, zero) => {
   let points = parse(input, zero)
-  console.debug("points at the start", { points })
+  console.debug("points at the start", points.size)
   for (let i = 0; i < 6; ++i) {
     points = cycle(points)
     console.debug("points after cycle", points.size)
@@ -116,11 +128,11 @@ const part1 = (input, zero) => {
   return points.size
 }
 
-console.debug(parse(test, [0]))
-console.debug(parse(input, [0]))
+// console.debug(parse(test, [0]))
+// console.debug(parse(input, [0]))
 
 console.log("part1 test", part1(test, [0]))
 console.log("part1", part1(input, [0]))
 
-// console.log("part2 test", part1(test, [0, 0]))
-// console.log("part2", part1(input, [0, 0]))
+console.log("part2 test", part1(test, [0, 0]))
+console.log("part2", part1(input, [0, 0]))
