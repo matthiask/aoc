@@ -40,8 +40,8 @@ const cartesian = (...a) =>
 const cartesian = (head, ...tail) => {
   const next = tail.length ? cartesian(...tail) : [[]]
   const results = []
-  for (let n of next) {
-    for (let h of head) {
+  for (let h of head) {
+    for (let n of next) {
       results.push([h, ...n])
     }
   }
