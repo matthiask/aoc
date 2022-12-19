@@ -16,18 +16,32 @@ nearby tickets:
 38,6,12
 `
 
+const test2 = `\
+class: 0-1 or 4-19
+row: 0-5 or 8-19
+seat: 0-13 or 16-19
+
+your ticket:
+11,12,13
+
+nearby tickets:
+3,9,18
+15,1,5
+5,14,9
+`
+
 const parse = (input) => {
   const [ruleLines, myTicket, nearbyTickets] = input.split("\n\n")
 
-  const rules = {}
-  ruleLines.split("\n").forEach((line) => {
+  const rules = ruleLines.split("\n").map((line) => {
     const [name, rangePieces] = line.split(": ")
     const ranges = rangePieces
       .split(" or ")
       .map((range) =>
         range.split("-").map((number, idx) => Number(number) + idx),
       )
-    rules[name] = {
+    return {
+      name,
       ranges,
       test(number) {
         return ranges.some((range) => range[0] <= number && number < range[1])
@@ -50,12 +64,68 @@ const part1 = (input) => {
   const { rules, nearbyTickets } = parse(input)
   const allNumbers = nearbyTickets.flat()
   const invalidNumbers = allNumbers.filter(
-    (number) => !Object.values(rules).some((rule) => rule.test(number)),
+    (number) => !rules.some((rule) => rule.test(number)),
   )
   // console.log(allNumbers, invalidNumbers)
   return invalidNumbers.reduce((a, b) => a + b, 0)
 }
 
+const part2 = (input) => {
+  const { rules, myTicket, nearbyTickets } = parse(input)
+
+  const validTickets = nearbyTickets.filter((ticket) =>
+    ticket.every((number) => rules.some((rule) => rule.test(number))),
+  )
+
+  const possible = new Map(
+    rules.map((_, idx) => [idx, new Set(rules.map((rule) => rule.name))]),
+  )
+
+  // console.debug(validTickets)
+  // console.debug(possible)
+
+  validTickets.forEach((ticket) => {
+    ticket.forEach((number, idx) => {
+      rules.forEach((rule) => {
+        if (!rule.test(number)) {
+          possible.get(idx).delete(rule.name)
+        }
+      })
+    })
+  })
+
+  // console.debug(possible)
+
+  const fieldsToIndex = new Map()
+
+  let foundAnother = true
+  while (foundAnother) {
+    foundAnother = false
+    for (let [idx, names] of possible.entries()) {
+      if (names.size === 1) {
+        const name = Array.from(names)[0]
+        fieldsToIndex.set(name, idx)
+        for (let names of possible.values()) {
+          names.delete(name)
+        }
+        foundAnother = true
+      }
+    }
+  }
+
+  console.log(fieldsToIndex)
+
+  let result = 1
+  Array.from(fieldsToIndex.entries()).forEach(([name, idx]) => {
+    if (name.startsWith("departure")) result *= myTicket[idx]
+  })
+
+  return result
+}
+
 console.debug(parse(test))
 console.log("part1 test", part1(test))
 console.log("part1", part1(input))
+
+console.log("part2 test", part2(test2))
+console.log("part2", part2(input))
