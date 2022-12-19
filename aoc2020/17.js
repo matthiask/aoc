@@ -15,22 +15,40 @@ const input = `\
 ..#..##.
 `
 
-const key = (x, y, z) => `${x},${y},${z}`
+const key = (...values) => values.map((v) => `${v}`).join(",")
 const unkey = (key) => key.split(",").map(Number)
 
-const parse = (input) => {
+const parse = (input, zero) => {
   const points = new Set()
   input
     .split("\n")
     .filter(Boolean)
     .forEach((line, y) =>
       Array.from(line).forEach((char, x) => {
-        if (char === "#") points.add(key(x, y, 0))
+        if (char === "#") points.add(key(x, y, ...zero))
       }),
     )
   return points
 }
 
+const neighbors = (point) => {
+  const neighbors = []
+  const values = unkey(point)
+
+  const pool = [-1, 0, 1]
+  const idxFun = values.map(
+    (_, idx) => (i) => pool[Math.floor(i / Math.pow(pool.length, idx)) % 3],
+  )
+  for (let i = 0; i < Math.pow(pool.length, values.length); ++i) {
+    neighbors.push(key(...idxFun.map((fn, idx) => values[idx] + fn(i))))
+  }
+  neighbors.splice(13, 1)
+  return neighbors
+  // console.debug({ point, neighbors })
+  // return [...neighbors.slice(0, 13), ...neighbors.slice(14)]
+}
+
+/*
 const neighbors = (point) => {
   const neighbors = []
   const [x, y, z] = unkey(point)
@@ -47,6 +65,7 @@ const neighbors = (point) => {
   // console.debug({ point, neighbors })
   return neighbors
 }
+*/
 
 const ranges = (points) => {
   const values = Array.from(points).map(unkey)
@@ -55,7 +74,7 @@ const ranges = (points) => {
     return [Math.min(...dimensionValues), Math.max(...dimensionValues)]
   }
 
-  return [range(0), range(1), range(2)]
+  return values.map((_, idx) => range(idx))
 }
 
 const cycle = (points) => {
@@ -87,8 +106,8 @@ const cycle = (points) => {
   return newPoints
 }
 
-const part1 = (input) => {
-  let points = parse(input)
+const part1 = (input, zero) => {
+  let points = parse(input, zero)
   console.debug("points at the start", { points })
   for (let i = 0; i < 6; ++i) {
     points = cycle(points)
@@ -97,8 +116,11 @@ const part1 = (input) => {
   return points.size
 }
 
-console.debug(parse(test))
-console.debug(parse(input))
+console.debug(parse(test, [0]))
+console.debug(parse(input, [0]))
 
-console.log("part1 test", part1(test))
-console.log("part1", part1(input))
+console.log("part1 test", part1(test, [0]))
+console.log("part1", part1(input, [0]))
+
+// console.log("part2 test", part1(test, [0, 0]))
+// console.log("part2", part1(input, [0, 0]))
