@@ -47,6 +47,30 @@ const evaluate = (tokens) => {
   return result
 }
 
+const evaluateSumThenMul = (tokens) => {
+  let factors = [null]
+  let operator = null
+  while (tokens.length) {
+    const token = tokens.shift()
+    // console.debug({ tokens: JSON.stringify(tokens), factors, operator, token })
+    if (token === "(") {
+      tokens.unshift(evaluateSumThenMul(tokens))
+    } else if (token === ")") {
+      break
+    } else if (factors[0] === null) {
+      factors[0] = token
+    } else if (operator === null && token === "+") {
+      operator = operators[token]
+    } else if (operator === null && token === "*") {
+      factors.unshift(null)
+    } else {
+      factors[0] = operator(factors[0], token)
+      operator = null
+    }
+  }
+  return factors.reduce((a, b) => a * b, 1)
+}
+
 /*
  */
 
@@ -63,21 +87,25 @@ const runTests = () => {
   for (let [calculation, expected] of tests) {
     let calculated = evaluate(tokenize(calculation))
     console.debug(calculated, expected, calculated === expected)
+    console.debug(evaluateSumThenMul(tokenize(calculation)))
   }
 }
 
 runTests()
 
-const part1 = (log, input) => {
+const part1 = (log, input, ev = evaluate) => {
   console.log(
     log,
     input
       .split("\n")
       .filter(Boolean)
-      .reduce((a, b) => a + evaluate(tokenize(b)), 0),
+      .reduce((a, b) => a + ev(tokenize(b)), 0),
   )
 }
 
 part1("part1", input)
+part1("part1", input, evaluateSumThenMul)
 
-// console.debug(evaluate(tokenize(tests[5][0])))
+// console.debug(tokenize("1 + 2 * 3 + 4 * 5 + 6"))
+// console.debug(evaluateSumThenMul(tokenize("1 + 2 * 3 + 4 * 5 + 6")))
+// console.debug(evaluateSumThenMul(tokenize("5 + (8 * 3 + 9 + 3 * 4 * 3)")))
