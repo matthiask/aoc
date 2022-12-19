@@ -2,6 +2,7 @@ import re
 from collections import deque
 from itertools import zip_longest
 from pprint import pprint
+from time import monotonic
 
 
 with open("19.txt") as f:
@@ -105,19 +106,19 @@ def next_actions(blueprint, robots, resources):
     ]
 
 
-def run(blueprint):
+def run(blueprint, initial_minutes):
     # print("blueprint", blueprint)
     robots = INITIAL_ROBOTS[:]
     resources = INITIAL_RESOURCES[:]
 
-    geodes = set()
     options = deque()
-    options.append([24, INITIAL_ROBOTS[:], INITIAL_RESOURCES[:]])
+    options.append([initial_minutes, INITIAL_ROBOTS[:], INITIAL_RESOURCES[:]])
 
     while options:
         minutes, robots, resources = options.popleft()
         if minutes == 0:
-            geodes.add(resources[GEODE])
+            yield resources[GEODE]
+            """
             print(
                 "found geode result",
                 resources[GEODE],
@@ -126,19 +127,47 @@ def run(blueprint):
                 robots,
                 resources,
             )
+            """
             continue
 
-        na = next_actions(blueprint, robots, resources)
+        # Hack: Prefer later options since they lead to GEODE robots existing quicker.
+        na = next_actions(blueprint, robots, resources)[-2:]
         # pprint(("next_actions", na))
         options.extendleft([minutes - 1, robots, resources] for robots, resources in na)
 
-    print(geodes)
-    return max(geodes)
+
+def run_timebox(blueprint, initial_minutes, seconds):
+    geodes = 0
+    end = monotonic() + seconds
+    results = run(blueprint, initial_minutes)
+    while True:
+        try:
+            geodes = max(geodes, next(results))
+        except StopIteration:
+            return geodes
+        if monotonic() > end:
+            return geodes
 
 
 # print(test_input)
-pprint(parse_blueprints(test_input))
+# pprint(parse_blueprints(test_input))
 # pprint(parse_blueprints(real_input))
 
-blueprints = parse_blueprints(test_input)
-run(blueprints[1])
+blueprints = parse_blueprints(real_input)
+pprint(blueprints)
+
+"""
+quality_levels = []
+for id, blueprint in blueprints.items():
+    geodes = run_timebox(blueprint, 24, 5)
+    print(f"blueprint {id} produces {geodes} geodes.")
+    quality_levels.append(id * geodes)
+print(sum(quality_levels))
+"""
+
+geodes_product = 1
+for id, blueprint in list(blueprints.items())[:3]:
+    geodes = run_timebox(blueprint, 32, 60)
+    print(f"blueprint {id} produces {geodes} geodes.")
+    geodes_product *= geodes
+print(geodes_product)
