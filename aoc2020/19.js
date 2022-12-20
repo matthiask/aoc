@@ -21,7 +21,8 @@ const parseSpec = (rules, spec) => {
   const string = spec.match(/"(.)"/)
   if (string) {
     return (rules, messageChars) => {
-      if (messageChars[0] === string[0]) {
+      // console.debug({ string, messageChars })
+      if (messageChars[0] === string[1]) {
         messageChars.shift()
         return true
       }
@@ -42,6 +43,12 @@ const parseSpec = (rules, spec) => {
   }
 }
 
+const isValid = (rules, message) => {
+  const check = rules.get(0),
+    messageChars = Array.from(message)
+  return check(rules, messageChars) && !messageChars.length
+}
+
 const parse = (input) => {
   const [ruleLines, messages] = input.split("\n\n")
 
@@ -58,14 +65,13 @@ const parse = (input) => {
 
   return {
     rules,
-    isValid: (message) => rules.get(0)(rules, Array.from(message)),
     messages: messages.split("\n").filter(Boolean),
   }
 }
 
-const { rules, isValid, messages } = parse(test)
+const { rules, messages } = parse(test)
 console.debug(rules)
 
 for (let message of messages) {
-  console.debug(message, isValid(message))
+  console.debug(message, isValid(rules, message))
 }
