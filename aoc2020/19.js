@@ -91,3 +91,11 @@ const part1 = (log, input) => {
 
 part1("part1 test", test)
 part1("part1", input)
+
+let input2 = input.split("\n\n")
+input2[0] += `
+8: 42 | 42 8
+11: 42 31 | 42 11 31`
+input2 = input2.join("\n\n")
+
+part1("part2", input2)
