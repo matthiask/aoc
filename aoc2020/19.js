@@ -20,33 +20,46 @@ const parseSpec = (rules, spec) => {
   // console.debug({ spec })
   const string = spec.match(/"(.)"/)
   if (string) {
-    return (rules, messageChars) => {
+    const char = string[1]
+    return (rules, messageChars, index) => {
       // console.debug({ string, messageChars })
-      if (messageChars[0] === string[1]) {
-        messageChars.shift()
-        return true
+      if (messageChars[index] === char) {
+        return index + 1
       }
-      return false
+      return index
     }
   }
 
   const variants = spec
     .split("|")
     .map((variant) => variant.trim().split(" ").filter(Boolean).map(Number))
-  console.debug({ variants })
-  return (rules, messageChars) => {
+  // console.debug({ variants })
+  return (rules, messageChars, index) => {
     for (let variant of variants) {
-      if (variant.every((number) => rules.get(number)(rules, messageChars)))
-        return true
+      let now = index,
+        next,
+        matches = true
+      for (let number of variant) {
+        next = rules.get(number)(rules, messageChars, now)
+        if (next > now) {
+          now = next
+        } else {
+          matches = false
+        }
+      }
+      if (matches) {
+        return next
+      }
     }
-    return false
+    return index
   }
 }
 
 const isValid = (rules, message) => {
-  const check = rules.get(0),
+  const rootRule = rules.get(0),
     messageChars = Array.from(message)
-  return check(rules, messageChars) && !messageChars.length
+  const consumed = rootRule(rules, messageChars, 0)
+  return consumed == messageChars.length
 }
 
 const parse = (input) => {
@@ -69,9 +82,12 @@ const parse = (input) => {
   }
 }
 
-const { rules, messages } = parse(test)
-console.debug(rules)
+const part1 = (log, input) => {
+  const { rules, messages } = parse(input)
+  // console.debug(rules)
 
-for (let message of messages) {
-  console.debug(message, isValid(rules, message))
+  console.log(log, messages.filter((message) => isValid(rules, message)).length)
 }
+
+part1("part1 test", test)
+part1("part1", input)
