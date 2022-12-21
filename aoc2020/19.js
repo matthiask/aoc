@@ -21,7 +21,7 @@ const parseSpec = (rules, spec) => {
   const string = spec.match(/"(.)"/)
   if (string) {
     const char = string[1]
-    return (rules, messageChars, index) => {
+    return (rules, messageChars, index, depth) => {
       // console.debug({ string, messageChars })
       if (messageChars[index] === char) {
         return index + 1
@@ -34,13 +34,16 @@ const parseSpec = (rules, spec) => {
     .split("|")
     .map((variant) => variant.trim().split(" ").filter(Boolean).map(Number))
   // console.debug({ variants })
-  return (rules, messageChars, index) => {
+  return (rules, messageChars, index, depth) => {
+    if (depth > 1000) return index
+
     for (let variant of variants) {
       let now = index,
         next,
         matches = true
       for (let number of variant) {
-        next = rules.get(number)(rules, messageChars, now)
+        next = rules.get(number)(rules, messageChars, now, depth + 1)
+        // console.debug({ now, next, matches })
         if (next > now) {
           now = next
         } else {
@@ -58,7 +61,7 @@ const parseSpec = (rules, spec) => {
 const isValid = (rules, message) => {
   const rootRule = rules.get(0),
     messageChars = Array.from(message)
-  const consumed = rootRule(rules, messageChars, 0)
+  const consumed = rootRule(rules, messageChars, 0, 0)
   return consumed == messageChars.length
 }
 
@@ -94,8 +97,8 @@ part1("part1", input)
 
 let input2 = input.split("\n\n")
 input2[0] += `
-8: 42 | 42 8
-11: 42 31 | 42 11 31`
+8: 42 8 | 42
+11: 42 11 31 | 42 31`
 input2 = input2.join("\n\n")
 
 part1("part2", input2)
