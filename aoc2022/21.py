@@ -29,6 +29,7 @@ _operations = {
     "-": operator.sub,
     "*": operator.mul,
     "/": operator.floordiv,
+    "=": operator.eq,
 }
 
 
@@ -45,6 +46,52 @@ class Calculation:
         return _operations[self.operation](
             *[calculations[name].value(calculations) for name in self.dependencies]
         )
+
+
+class Human:
+    name = "humn"
+
+    def __init__(self):
+        self.calculations = []
+
+    def value(self, calculations):
+        return self
+
+    def __add__(self, value):
+        self.calculations.append(lambda v: v - value)
+        return self
+
+    __radd__ = __add__
+
+    def __sub__(self, value):
+        self.calculations.append(lambda v: v + value)
+        return self
+
+    def __rsub__(self, value):
+        # will_be_known = intermediate - humn
+        # ==> humn = intermediate - will_be_known
+        self.calculations.append(lambda v: value - v)
+        return self
+
+    def __mul__(self, value):
+        # will_be_known = intermediate * humn
+        # ==> humn = will_be_known // intermediate
+        self.calculations.append(lambda v: v // value)
+        return self
+
+    __rmul__ = __mul__
+
+    def __floordiv__(self, value):
+        self.calculations.append(lambda v: v * value)
+        return self
+
+    def __eq__(self, value):
+        # print("__eq__", value)
+        # return self
+
+        for calc in reversed(self.calculations):
+            value = calc(value)
+        return value
 
 
 def parse_calculation(line):
@@ -65,13 +112,21 @@ def parse(input):
 
 
 if __name__ == "__main__":
-    from pprint import pprint
-
-    pprint(parse(test))
-
+    # from pprint import pprint
+    # pprint(parse(test))
     # pprint(evaluate(parse(test)))
 
     calculations = parse(test)
     print("part1 test", calculations["root"].value(calculations))
     calculations = parse(input)
     print("part1", calculations["root"].value(calculations))
+
+    calculations = parse(test)
+    calculations["humn"] = Human()
+    calculations["root"].operation = "="
+    print("part2 test", calculations["root"].value(calculations))
+
+    calculations = parse(input)
+    calculations["humn"] = Human()
+    calculations["root"].operation = "="
+    print("part2", calculations["root"].value(calculations))
