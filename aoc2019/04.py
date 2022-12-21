@@ -22,12 +22,13 @@ def generator():
             range(2, 10),
         )
     )
-    numbers = (
-        number for number in numbers if any(repeat in number for repeat in repeats)
+    return (
+        number
+        for number in numbers
+        if any(repeat in number for repeat in repeats)
+        and all(d not in number for d in descending)
+        and range_[0] <= int(number) <= range_[1]
     )
-    numbers = (number for number in numbers if all(d not in number for d in descending))
-    numbers = (number for number in numbers if range_[0] <= int(number) <= range_[1])
-    return numbers
 
 
 print(sum(1 for _ in generator()))
