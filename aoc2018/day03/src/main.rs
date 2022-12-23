@@ -2,29 +2,45 @@ use std::fs;
 use std::io::{self, BufRead};
 // use std::iter::zip;
 
+#[derive(Copy, Clone)]
 struct Rect {
-    x: usize,
-    y: usize,
-    w: usize,
-    h: usize,
+    x: i64,
+    y: i64,
+    w: i64,
+    h: i64,
     negative: bool,
 }
 
 impl Rect {
-    fn x_outside(&self) -> usize {
+    fn x_outside(&self) -> i64 {
         self.x + self.w
     }
 
-    fn y_outside(&self) -> usize {
+    fn y_outside(&self) -> i64 {
         self.y + self.h
     }
 
-    fn size(&self) -> usize {
-        self.w * self.h
+    fn size(&self) -> i64 {
+        let area = self.w * self.h ;
+        if self.negative {
+            return -area;
+        }
+        area
     }
 
     fn intersect(&self, other: &Rect) -> Option<Rect> {
-        None
+        if !self.overlaps(&other) {
+            return None;
+        }
+        let x = std::cmp::max(self.x, other.x);
+        let y = std::cmp::max(self.y, other.y);
+        Some(Rect {
+            x,
+            y,
+            w: std::cmp::min(self.x_outside(), other.x_outside()) - x,
+            h: std::cmp::min(self.y_outside(), other.y_outside()) - y,
+            negative: true,
+        })
     }
 
     fn overlaps(&self, other: &Rect) -> bool {
@@ -41,10 +57,10 @@ fn parse_claim(line: &str) -> Rect {
         .collect();
     // println!("parts: {:?}", &parts);
     Rect {
-        x: parts[4].parse::<usize>().unwrap(),
-        y: parts[5].parse::<usize>().unwrap(),
-        w: parts[7].parse::<usize>().unwrap(),
-        h: parts[8].parse::<usize>().unwrap(),
+        x: parts[4].parse::<i64>().unwrap(),
+        y: parts[5].parse::<i64>().unwrap(),
+        w: parts[7].parse::<i64>().unwrap(),
+        h: parts[8].parse::<i64>().unwrap(),
         negative: false,
     }
 }
@@ -63,13 +79,22 @@ fn main() -> io::Result<()> {
 
     let mut rects = Vec::new();
     for rect in claims {
-        for inter in &rects.clone() {
-            if let Some(x) = rect.intersect(&inter) {
+        for i in 0..rects.len() {
+            if let Some(x) = rect.intersect(&rects[i]) {
+                rects.push(rect);
+                rects.push(rects[i]);
                 rects.push(x);
             }
         }
         rects.push(rect);
     }
+
+    let mut area = 0;
+    for rect in rects {
+        area += rect.size();
+    }
+
+    println!("area: {}", area);
 
     Ok(())
 }
