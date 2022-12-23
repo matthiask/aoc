@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fs;
 use std::io::{self, BufRead};
 
@@ -9,6 +10,9 @@ fn main() -> io::Result<()> {
     // Read the file line by line.
     let mut numbers = Vec::new();
     for line in reader.lines() {
+        numbers.push(line?.parse::<i32>().unwrap())
+
+        /*
         // Parse each line as a number.
         match line?.parse::<i32>() {
             Ok(n) => numbers.push(n),
@@ -16,14 +20,28 @@ fn main() -> io::Result<()> {
                 println!("Error: {}", e)
             }
         }
+        */
     }
 
     // Do something with the numbers.
     let mut freq = 0;
-    for number in numbers {
+    for number in &numbers {
         freq += number;
     }
     println!("freq: {}", freq);
+
+    let mut seen = HashSet::new();
+    freq = 0;
+    'outer: loop {
+        for number in &numbers {
+            freq += number;
+            if seen.contains(&freq) {
+                println!("freq: {}", freq);
+                break 'outer;
+            }
+            seen.insert(freq);
+        }
+    }
 
     Ok(())
 }
