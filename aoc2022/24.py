@@ -35,11 +35,15 @@ class Blizzard:
         return complex(x % self.bounds[0], y % self.bounds[1])
 
 
-def modulo(c1, c2):
-    return complex(c1.real % c2.real, c1.imag % c2.imag)
+@dataclass
+class Puzzle:
+    blizzards: list[Blizzard]
+    bounds: list[int]
+    entry: complex
+    exit: complex
 
 
-def parse(inp):
+def parse(inp) -> Puzzle:
     lines = inp.strip().split("\n")
     entry = complex(lines[0].index(".") - 1, -1)
     exit = complex(lines[-1].index(".") - 1, len(lines) - 1)
@@ -53,35 +57,42 @@ def parse(inp):
         if c in _directions
     ]
 
-    return blizzards, bounds, entry, exit
+    return Puzzle(blizzards, bounds, entry, exit)
 
 
-def pretty(blizzards, bounds, entry, exit):
+def pretty(puzzle, blizzards):
     lines = [
-        "#" * (bounds[0] + 2),
+        "#" * (puzzle.bounds[0] + 2),
     ]
     lines = [
         "#{}#".format(
-            "".join(blizzards.get(complex(x, y), ".") for x in range(bounds[0]))
+            "".join(blizzards.get(complex(x, y), ".") for x in range(puzzle.bounds[0]))
         )
-        for y in range(bounds[1])
+        for y in range(puzzle.bounds[1])
     ]
     lines.insert(
-        0, "".join("." if entry.real + 1 == x else "#" for x in range(bounds[0] + 2))
+        0,
+        "".join(
+            "." if puzzle.entry.real + 1 == x else "#"
+            for x in range(puzzle.bounds[0] + 2)
+        ),
     )
     lines.append(
-        "".join("." if exit.real + 1 == x else "#" for x in range(bounds[0] + 2))
+        "".join(
+            "." if puzzle.exit.real + 1 == x else "#"
+            for x in range(puzzle.bounds[0] + 2)
+        )
     )
     print("\n".join(lines))
     print()
 
 
-def _test_animate_blizzards(blizzards, bounds, entry, exit):
+def _test_animate_blizzards(puzzle):
     import time
 
     for step in count():
-        b = {blizzard.at(step): blizzard.direction for blizzard in blizzards}
-        pretty(b, bounds, entry, exit)
+        b = {blizzard.at(step): blizzard.direction for blizzard in puzzle.blizzards}
+        pretty(puzzle, b)
         time.sleep(0.5)
 
 
@@ -89,7 +100,6 @@ if __name__ == "__main__":
     import sys
 
     inp = open(sys.argv[1] if len(sys.argv) > 1 else "24.txt").read()
-    parse(inp)
-    blizzards, bounds, entry, exit = parse(inp)
+    puzzle = parse(inp)
 
-    _test_animate_blizzards(blizzards, bounds, entry, exit)
+    _test_animate_blizzards(puzzle)
