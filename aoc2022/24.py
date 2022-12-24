@@ -117,11 +117,13 @@ def solve(puzzle):
         visitable = {
             v
             for v in (point + move for move in _moves)
-            if 0 <= v.real < puzzle.bounds[0]
-            and 0 <= v.imag < puzzle.bounds[1]
+            if (
+                (0 <= v.real < puzzle.bounds[0] and 0 <= v.imag < puzzle.bounds[1])
+                or (v == puzzle.entry or v == puzzle.exit)
+            )
             and v not in b
         }
-        print({"point": point, "visitable": visitable, "seen": seen})
+        print({"point": point, "step": step, "visitable": visitable})
 
         for next in visitable:
             # Idea: If we can visit anything that isn't seen already, go there.
