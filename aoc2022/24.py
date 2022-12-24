@@ -10,8 +10,12 @@ O = (0, 0)
     #.....#
     #####.#
 """
+
+import heapq
+import random
 from dataclasses import dataclass
 from itertools import count
+from typing import List
 
 
 _directions = {
@@ -20,13 +24,14 @@ _directions = {
     "v": 1j,
     "<": -1 + 0j,
 }
+_moves = {0} | set(_directions.values())
 
 
 @dataclass
 class Blizzard:
     initial: complex
     direction: str
-    bounds: list[int]
+    bounds: List[int]
 
     def at(self, step):
         d = _directions[self.direction]
@@ -37,8 +42,8 @@ class Blizzard:
 
 @dataclass
 class Puzzle:
-    blizzards: list[Blizzard]
-    bounds: list[int]
+    blizzards: List[Blizzard]
+    bounds: List[int]
     entry: complex
     exit: complex
 
@@ -96,10 +101,45 @@ def _test_animate_blizzards(puzzle):
         time.sleep(0.5)
 
 
+def solve(puzzle):
+    seen = {puzzle.entry}
+    heap = [(0, 0, 0, puzzle.entry)]
+
+    while heap:
+        # print(heap)
+        cost, step, _, point = heapq.heappop(heap)
+
+        if point == puzzle.exit:
+            return step
+
+        step += 1
+        b = {blizzard.at(step) for blizzard in puzzle.blizzards}
+        visitable = {
+            v
+            for v in (point + move for move in _moves)
+            if 0 <= v.real < puzzle.bounds[0]
+            and 0 <= v.imag < puzzle.bounds[1]
+            and v not in b
+        }
+        print({"point": point, "visitable": visitable, "seen": seen})
+
+        for next in visitable:
+            # Idea: If we can visit anything that isn't seen already, go there.
+            if next in seen and visitable - seen:
+                continue
+            seen.add(next)
+            heapq.heappush(
+                heap, (cost + 1, step, -next.real - next.imag - random.random(), next)
+            )
+
+        print("len", len(heap))
+
+
 if __name__ == "__main__":
     import sys
 
     inp = open(sys.argv[1] if len(sys.argv) > 1 else "24.txt").read()
     puzzle = parse(inp)
 
-    _test_animate_blizzards(puzzle)
+    # _test_animate_blizzards(puzzle)
+    print(solve(puzzle))
