@@ -29,9 +29,9 @@ _moves = {0} | set(_directions.values())
 _move_cost = {
     1j: 1,
     1: 1,
-    0: 3,
-    -1j: 5,
-    -1: 5,
+    0: 2,
+    -1j: 3,
+    -1: 3,
 }
 
 
@@ -59,7 +59,7 @@ class Puzzle:
 def parse(inp) -> Puzzle:
     lines = inp.strip().split("\n")
     entry = complex(lines[0].index(".") - 1, -1)
-    exit = complex(lines[-1].index(".") - 1, len(lines) - 1)
+    exit = complex(lines[-1].index(".") - 1, len(lines) - 2)
 
     bounds = [len(lines[0]) - 2, len(lines) - 2]
 
@@ -127,12 +127,13 @@ def solve(puzzle):
             for v in (point + move for move in _moves)
             if (
                 (0 <= v.real < puzzle.bounds[0] and 0 <= v.imag < puzzle.bounds[1])
-                or (point == puzzle.entry and point == v)
+                or (v == puzzle.entry and v == point)
                 or v == puzzle.exit
             )
             and v not in b
         }
-        print({"point": point, "cost": cost, "step": step, "visitable": visitable})
+
+        # print({"point": point, "cost": cost, "step": step, "visitable": visitable})
 
         for next in visitable:
             # Idea: If we can visit anything that isn't seen already, go there.
@@ -159,4 +160,5 @@ if __name__ == "__main__":
     puzzle = parse(inp)
 
     # _test_animate_blizzards(puzzle)
+    print(puzzle)
     print(solve(puzzle))
