@@ -26,6 +26,14 @@ _directions = {
 }
 _moves = {0} | set(_directions.values())
 
+_move_cost = {
+    1j: 1,
+    1: 1,
+    0: 3,
+    -1j: 5,
+    -1: 5,
+}
+
 
 @dataclass
 class Blizzard:
@@ -119,11 +127,12 @@ def solve(puzzle):
             for v in (point + move for move in _moves)
             if (
                 (0 <= v.real < puzzle.bounds[0] and 0 <= v.imag < puzzle.bounds[1])
-                or (v == puzzle.entry or v == puzzle.exit)
+                or (point == puzzle.entry and point == v)
+                or v == puzzle.exit
             )
             and v not in b
         }
-        print({"point": point, "step": step, "visitable": visitable})
+        print({"point": point, "cost": cost, "step": step, "visitable": visitable})
 
         for next in visitable:
             # Idea: If we can visit anything that isn't seen already, go there.
@@ -131,7 +140,13 @@ def solve(puzzle):
                 continue
             seen.add(next)
             heapq.heappush(
-                heap, (cost + 1, step, -next.real - next.imag - random.random(), next)
+                heap,
+                (
+                    cost + _move_cost[next - point],
+                    step,
+                    -next.real - next.imag - random.random(),
+                    next,
+                ),
             )
 
         print("len", len(heap))
