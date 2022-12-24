@@ -11,8 +11,6 @@ O = (0, 0)
     #####.#
 """
 
-import heapq
-import random
 from dataclasses import dataclass
 from itertools import count
 from typing import List
@@ -110,47 +108,24 @@ def _test_animate_blizzards(puzzle):
 
 
 def solve(puzzle):
-    seen = {puzzle.entry}
-    heap = [(0, 0, 0, puzzle.entry)]
+    now = [puzzle.entry]
+    step = 0
 
-    while heap:
-        # print(heap)
-        cost, step, _, point = heapq.heappop(heap)
-
-        if point == puzzle.exit:
-            return step
-
+    while now:
         step += 1
         b = {blizzard.at(step) for blizzard in puzzle.blizzards}
-        visitable = {
-            v
-            for v in (point + move for move in _moves)
+        next = {pos + move for pos in now for move in _moves}
+        now = []
+        for pos in next:
+            if pos == puzzle.exit:
+                return step
             if (
-                (0 <= v.real < puzzle.bounds[0] and 0 <= v.imag < puzzle.bounds[1])
-                or (v == puzzle.entry and v == point)
-                or v == puzzle.exit
-            )
-            and v not in b
-        }
+                (0 <= pos.real < puzzle.bounds[0] and 0 <= pos.imag < puzzle.bounds[1])
+                or pos in {puzzle.entry, puzzle.exit}
+            ) and pos not in b:
+                now.append(pos)
 
-        # print({"point": point, "cost": cost, "step": step, "visitable": visitable})
-
-        for next in visitable:
-            # Idea: If we can visit anything that isn't seen already, go there.
-            if next in seen and visitable - seen:
-                continue
-            seen.add(next)
-            heapq.heappush(
-                heap,
-                (
-                    cost + _move_cost[next - point],
-                    step,
-                    -next.real - next.imag - random.random(),
-                    next,
-                ),
-            )
-
-        print("len", len(heap))
+        # print("len", len(heap))
 
 
 if __name__ == "__main__":
