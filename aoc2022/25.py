@@ -5,6 +5,7 @@ snafu_digits = {
     "-": -1,
     "=": -2,
 }
+reverse_snafu_digits = {v: k for k, v in snafu_digits.items()}
 
 
 def snafu_to_decimal(number):
@@ -15,7 +16,13 @@ def snafu_to_decimal(number):
 
 
 def decimal_to_snafu(number):
-    pass
+    digits = []
+    while number > 1:
+        number, mod = divmod(number, 5)
+        digits.append(str(mod))
+        if mod > 2:
+            number += 1
+    return "".join(reversed(digits)).replace("4", "-").replace("3", "=")
 
 
 if __name__ == "__main__":
@@ -26,3 +33,4 @@ if __name__ == "__main__":
 
     summed = sum([snafu_to_decimal(line.strip()) for line in inp])
     print(summed)
+    print(decimal_to_snafu(summed))
