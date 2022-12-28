@@ -175,6 +175,8 @@ const part1 = (log, input) => {
   // console.log(log, messages.filter((message) => isValid(rules, message)).length)
   // console.debug("count", tiles.length)
 
+  let outsideEdgeIds
+
   for (let edges of cartesian(
     ...puzzle.tiles.map((tile) => [tile.cw, tile.ccw]),
   )) {
@@ -188,10 +190,24 @@ const part1 = (log, input) => {
       const groups = groupBy(edgeIdOccurrences.entries())
       console.debug("Outside", groups.get(1))
       console.debug("Inside", groups.get(2))
+      outsideEdgeIds = groups.get(1)
       break
     }
   }
+
+  const outsideTiles = puzzle.tiles.filter(
+    (tile) =>
+      [...tile.cw, ...tile.ccw].filter((edgeId) =>
+        outsideEdgeIds.includes(edgeId),
+      ).length === 2,
+  )
+  // console.debug(outsideTiles)
+
+  console.log(
+    log,
+    outsideTiles.reduce((a, b) => a * b.id, 1),
+  )
 }
 
 part1("part1 test", test)
-// part1("part1", input)
+part1("part1", input)
