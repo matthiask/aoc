@@ -27,15 +27,22 @@ const parse = (input) => {
   return decks
 }
 
-const round = (decks) => {
-  const top1 = decks[0].shift()
-  const top2 = decks[1].shift()
+const round = (deck1, deck2) => {
+  const top1 = deck1.shift()
+  const top2 = deck2.shift()
 
   if (top1 > top2) {
-    decks[0].push(top1, top2)
+    deck1.push(top1, top2)
   } else {
-    decks[1].push(top2, top1)
+    deck2.push(top2, top1)
   }
+}
+
+const winningDeck = (deck1, deck2) => {
+  while (deck1.length && deck2.length) {
+    round(deck1, deck2)
+  }
+  return deck1.length ? deck1 : deck2
 }
 
 const score = (deck) => {
@@ -47,13 +54,7 @@ const score = (deck) => {
 const solve = (input) => {
   const decks = parse(input)
 
-  // console.debug(decks)
-  while (decks[0].length && decks[1].length) {
-    round(decks)
-  }
-  // console.debug(decks)
-
-  console.log("part1", score(decks[0].length ? decks[0] : decks[1]))
+  console.log("part1", score(winningDeck(...decks)))
 }
 
 solve(test)
