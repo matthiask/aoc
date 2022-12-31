@@ -78,32 +78,29 @@ const part1 = (log, input) => {
       .reduce((a, b) => a + b),
   )
 
-  const knowledgeByDegree = Array.from(knowledge.entries()).sort(
-    (a, b) => a[1].size - b[1].size,
-  )
-
-  console.debug(knowledgeByDegree)
-
   const identified = new Map()
-  const knownIngredients = new Set()
-  for (let [allergen, ingredients] of knowledgeByDegree) {
-    const unassigned = difference(ingredients, knownIngredients)
-    if (unassigned.size !== 1) {
-      console.debug(allergen, ingredients, unassigned)
-      throw Error()
-    }
+  while (knowledge.size) {
+    for (let [allergen, ingredients] of knowledge.entries()) {
+      if (ingredients.size === 1) {
+        const ingredient = Array.from(ingredients)[0]
+        identified.set(allergen, ingredient)
+        knowledge.delete(allergen)
+        for (let ingredients of knowledge.values()) {
+          ingredients.delete(ingredient)
+        }
 
-    const ingredient = Array.from(unassigned)[0]
-    identified.set(allergen, ingredient)
-    knownIngredients.add(ingredient)
+        // console.debug(knowledge)
+        continue
+      }
+    }
   }
 
-  console.debug(identified)
+  // console.debug(identified)
 
   console.log(
     "part2",
     Array.from(identified.entries())
-      .sort((a, b) => a[0] < b[0])
+      .sort()
       .map((a) => a[1])
       .join(","),
   )
