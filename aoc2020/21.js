@@ -42,11 +42,9 @@ const parse = (input) => {
 
 const part1 = (log, input) => {
   const puzzle = parse(input)
-  const foods = [...puzzle.foods]
-  foods.sort((a, b) => a.allergens.size - b.allergens.size)
 
   const knowledge = new Map()
-  for (let food of foods) {
+  for (let food of puzzle.foods) {
     for (let allergen of food.allergens) {
       if (knowledge.has(allergen)) {
         knowledge.set(
@@ -78,6 +76,36 @@ const part1 = (log, input) => {
     puzzle.foods
       .map((food) => intersection(food.ingredients, noAllergenIngredients).size)
       .reduce((a, b) => a + b),
+  )
+
+  const knowledgeByDegree = Array.from(knowledge.entries()).sort(
+    (a, b) => a[1].size - b[1].size,
+  )
+
+  console.debug(knowledgeByDegree)
+
+  const identified = new Map()
+  const knownIngredients = new Set()
+  for (let [allergen, ingredients] of knowledgeByDegree) {
+    const unassigned = difference(ingredients, knownIngredients)
+    if (unassigned.size !== 1) {
+      console.debug(allergen, ingredients, unassigned)
+      throw Error()
+    }
+
+    const ingredient = Array.from(unassigned)[0]
+    identified.set(allergen, ingredient)
+    knownIngredients.add(ingredient)
+  }
+
+  console.debug(identified)
+
+  console.log(
+    "part2",
+    Array.from(identified.entries())
+      .sort((a, b) => a[0] < b[0])
+      .map((a) => a[1])
+      .join(","),
   )
 }
 
