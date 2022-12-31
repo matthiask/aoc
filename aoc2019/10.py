@@ -22,6 +22,11 @@ def visibility_spec(from_point, to_point):
     atan2(0, -1) == pi
     atan2(0, 1) == pi
 
+    But, we want to order by angle for the vaporization order. Jumble and
+    juggle x, y and the base angle to make the result of this func start at "0"
+    for straight upwards and increasing to almost 2*pi when following the
+    circle in the clockwise direction.
+
     >>> visibility_spec((0, 0), (0, -1))
     0.0
     >>> 1.5 < visibility_spec((0, 0), (1, 0)) < 1.6
