@@ -4,8 +4,14 @@ wires = {}
 
 def value(v):
     if v in wires:
-        return wires[v]()
+        if callable(wires[v]):
+            wires[v] = wires[v]()
+        return wires[v]
     return int(v)
+
+
+# Part 2
+IN.append("16076 -> b")
 
 
 for line in IN:
