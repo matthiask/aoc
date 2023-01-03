@@ -1,12 +1,14 @@
+from functools import cache
+
+
 IN = [*open("07.txt")]
 wires = {}
 
 
+@cache
 def value(v):
     if v in wires:
-        if callable(wires[v]):
-            wires[v] = wires[v]()
-        return wires[v]
+        return wires[v]()
     return int(v)
 
 
