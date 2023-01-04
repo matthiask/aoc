@@ -4,7 +4,7 @@ from itertools import count
 
 
 base = 26
-nu_digits = (string.digits + string.ascii_lowercase)[:26]
+nu_digits = (string.digits + string.ascii_lowercase)[:base]
 pw_digits = string.ascii_lowercase
 
 fw = dict(zip(nu_digits, pw_digits))
@@ -15,10 +15,10 @@ def convert(s, mapping):
     return "".join(mapping[c] for c in s)
 
 
-def base26(num):
+def to_base(num):
     digits = []
     while True:
-        num, q = divmod(num, 26)
+        num, q = divmod(num, base)
         digits.append(nu_digits[q])
         if not num:
             return "".join(reversed(digits))
@@ -52,11 +52,11 @@ def is_valid(pw):
     return False
 
 
-# current = int(convert("hepxcrrq", bw), 26)
-current = int(convert("hepxxyzz", bw), 26)
+# current = int(convert("hepxcrrq", bw), base)
+current = int(convert("hepxxyzz", bw), base)
 
 for i in count(current + 1):
-    pw = convert(base26(i), fw)
+    pw = convert(to_base(i), fw)
     if is_valid(pw):
         print(pw)
         break
