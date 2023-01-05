@@ -4,7 +4,7 @@ import sys
 
 IN = [*open("19.txt" if len(sys.argv) < 2 else sys.argv[1])]
 
-element_re = re.compile(r"[A-Z][a-z]*")
+element_re = re.compile(r"e|[A-Z][a-z]*")
 molecule = IN[-1].strip()
 replacements = {}
 for src, dst in (line.strip().split(" => ") for line in IN[:-2]):
@@ -30,4 +30,18 @@ def replace_one(molecule):
     return ret
 
 
+def synthesize(start):
+    todo = [(start, 0)]
+
+    while True:
+        next_todo = []
+        for intermediate, steps in todo:
+            if intermediate == molecule:
+                return steps
+            next_todo.extend((res, steps + 1) for res in replace_one(intermediate))
+        todo = next_todo
+        # print(todo)
+
+
 print(len(replace_one(molecule)))
+print(synthesize("e"))
