@@ -1,33 +1,33 @@
 import re
-from itertools import product
+import sys
 
 
-IN = [*open("19.txt")]
+IN = [*open("19.txt" if len(sys.argv) < 2 else sys.argv[1])]
 
-molecule = IN[-1]
+element_re = re.compile(r"[A-Z][a-z]*")
+molecule = IN[-1].strip()
 replacements = {}
 for src, dst in (line.strip().split(" => ") for line in IN[:-2]):
     if src not in replacements:
-        replacements[src] = [src]
+        replacements[src] = []
     replacements[src].append(dst)
 
-print(molecule)
-print(replacements)
 
-element = re.compile(r"[A-Z][a-z]*")
-print(element.findall(molecule))
+# print(molecule)
+# print(replacements)
+# print(element_re.findall(molecule))
 
 
-def replace(molecules):
+def replace_one(molecule):
     ret = set()
-    for molecule in molecules:
-        ret |= {
-            "".join(elements)
-            for elements in product(
-                *[replacements.get(el, [el]) for el in element.findall(molecule)]
-            )
-        }
+    elements = element_re.findall(molecule)
+    for index, element in enumerate(elements):
+        if (r := replacements.get(element)) is not None:
+            e = elements[:]
+            for repl in r:
+                e[index] = repl
+                ret.add("".join(e))
     return ret
 
 
-print(len(replace([molecule])))
+print(len(replace_one(molecule)))
