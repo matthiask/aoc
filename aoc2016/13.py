@@ -35,4 +35,15 @@ def path_length(start, end):
                 heapq.heappush(heap, (cost + 1, to))
 
 
+def possible_locations(start, steps):
+    seen = {start}
+    for _ in range(steps):
+        next_seen = set(seen)
+        for p in seen:
+            next_seen |= set(visitable(*p))
+        seen = next_seen
+    return len(seen)
+
+
 print(path_length((1, 1), (31, 39)))
+print(possible_locations((1, 1), 50))
