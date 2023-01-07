@@ -47,4 +47,4 @@ def is_real_room_test(line):
 rooms = [parse_line(line.strip()) for line in open("04.txt")]
 real_rooms = [room for room in rooms if is_real_room(room)]
 print(sum(room[1] for room in real_rooms))
-print({decrypt(room): room[1] for room in real_rooms})
+print({decrypt(room): room[1] for room in real_rooms if "north" in decrypt(room)})
