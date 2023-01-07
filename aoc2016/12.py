@@ -1,6 +1,4 @@
-IN = [*open("12.txt")]
-
-
+IN = [line.strip().split() for line in open("12.txt")]
 registers = {r: 0 for r in "abcd"}
 ip = 0
 
@@ -16,17 +14,17 @@ def read(r):
 
 
 while ip < len(IN):
-    match IN[ip].strip().split():
-        case ("cpy", what, register):
-            registers[register] = read(what)
-        case ("inc", register):
-            registers[register] += 1
-        case ("dec", register):
-            registers[register] -= 1  # XXX max(0, ...) ?
-        case ("jnz", register, offset):
-            if read(register) != 0:
-                ip += int(offset)
-                continue
+    op = IN[ip]
+    if op[0] == "cpy":
+        registers[op[2]] = read(op[1])
+    elif op[0] == "inc":
+        registers[op[1]] += 1
+    elif op[0] == "dec":
+        registers[op[1]] -= 1
+    elif op[0] == "jnz":
+        if read(op[1]) != 0:
+            ip += int(op[2])
+            continue
 
     ip += 1
 
