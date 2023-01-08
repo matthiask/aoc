@@ -22,11 +22,11 @@ def next_row(row):
     )
 
 
-def expand(first, lines):
-    grid = [first]
+def expand(row, lines):
+    yield row
     for _ in range(lines - 1):
-        grid.append(next_row(grid[-1]))
-    return grid
+        row = next_row(row)
+        yield row
 
 
 # print(sum(line.count(".") for line in grid))
