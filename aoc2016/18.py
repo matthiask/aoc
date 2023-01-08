@@ -24,7 +24,7 @@ def next_row(row):
 
 def expand(first, lines):
     grid = [first]
-    while len(grid) < lines:
+    for _ in range(lines - 1):
         grid.append(next_row(grid[-1]))
     return grid
 
