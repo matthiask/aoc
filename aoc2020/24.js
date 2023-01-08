@@ -40,10 +40,12 @@ const parse = (input) => {
   return lines
 }
 
+const add = (v1, v2) => [v1[0] + v2[0], v1[1] + v2[1]]
+
 const parseCoords = (coords) => coords.split(",").map(Number)
 
 const getAdjacent = (coords) =>
-  Object.values(adjacent).map((v) => [coords[0] + v[0], coords[1] + v[1]])
+  Object.values(adjacent).map((v) => add(coords, v))
 
 const getAdjacentAndSelf = (coords) => [coords, ...getAdjacent(coords)]
 
@@ -55,9 +57,7 @@ const solve = (input) => {
     let re = /(se|sw|ne|nw|e|w)/g
     let match
     while ((match = re.exec(line))) {
-      let d = adjacent[match[0]]
-      coords[0] += d[0]
-      coords[1] += d[1]
+      coords = add(coords, adjacent[match[0]])
     }
     coords = coords.join(",")
     if (black.has(coords)) {
