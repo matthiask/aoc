@@ -54,9 +54,7 @@ const solve = (input) => {
   let black = new Set()
   for (let line of lines) {
     let coords = [0, 0]
-    let re = /(se|sw|ne|nw|e|w)/g
-    let match
-    while ((match = re.exec(line))) {
+    for (let match of line.matchAll(/(?:se|sw|ne|nw|e|w)/g)) {
       coords = add(coords, adjacent[match[0]])
     }
     coords = coords.join(",")
