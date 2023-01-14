@@ -34,9 +34,8 @@ while ip < len(IN):
             ip += read(op[2])
             continue
     elif op[0] == "tgl":
-        offset = read(op[1])
-        # Only executed next time if offset == 0
-        if 0 <= (tgl := ip + offset) < len(IN):
+        tgl = ip + read(op[1])
+        if 0 <= tgl < len(IN):
             instr = IN[tgl]
             if len(instr) == 2:
                 if instr[0] == "inc":
