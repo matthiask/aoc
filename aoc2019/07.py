@@ -24,7 +24,7 @@ def v(program, p, mode, rb):
     raise Exception()
 
 
-def run(program, inputs):
+def run(program):
     ip = 0
     rb = 0  # relative base
     while True:
@@ -44,7 +44,7 @@ def run(program, inputs):
             )
             ip += 4
         elif op == 3:
-            program[program[ip + 1]] = inputs.pop(0)
+            program[program[ip + 1]] = yield None
             ip += 2
         elif op == 4:
             yield v(program, ip + 1, p1_mode, rb)
@@ -85,7 +85,10 @@ def run(program, inputs):
 def run_once(settings):
     signal = 0
     for setting in settings:
-        signal = next(run(program[:], inputs=[setting, signal]))
+        p = run(program[:])
+        p.send(None)
+        p.send(setting)
+        signal = p.send(signal)
     return signal
 
 
