@@ -1,5 +1,5 @@
 import sys
-from itertools import permutations
+from itertools import count, permutations
 
 
 program = [
@@ -94,7 +94,24 @@ def run_once(settings):
 
 def run_loop(settings):
     signal = 0
+    length = len(settings)
+
+    amps = []
+    for setting in settings:
+        p = run(program[:])
+        p.send(None)
+        p.send(setting)
+        amps.append(p)
+
+    signal = amps[0].send(0)
+    for i in count(1):
+        signal = amps[i % length].send(signal)
+        print(signal)
+    return signal
 
 
 print("part1")
 print(max(run_once(permutation) for permutation in permutations([0, 1, 2, 3, 4])))
+print("part2")
+print(run_loop([9, 8, 7, 6, 5]))
+print(max(run_loop(permutation) for permutation in permutations([5, 6, 7, 8, 9])))
