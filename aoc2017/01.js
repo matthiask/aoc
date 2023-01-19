@@ -5,14 +5,16 @@ const parse = (input) => Array.from(input).map(Number)
 
 // console.debug(parse(input))
 
-const part1 = (numbers) => {
+const captcha = (numbers, offset) => {
   let sum = 0
   for (let i = 0, len = numbers.length; i < len; ++i) {
-    if (numbers[i] === numbers[(i + 1) % len]) {
+    if (numbers[i] === numbers[(i + offset) % len]) {
       sum += numbers[i]
     }
   }
   return sum
 }
 
-console.log("part1", part1(parse(input)))
+const n = parse(input)
+console.log("part1", captcha(n, 1))
+console.log("part2", captcha(n, n.length / 2))
