@@ -13,19 +13,7 @@ const isValidPart1 = (line) => {
 const rearrange = (line) => {
   return line
     .split(" ")
-    .map((word) => {
-      let counts = new Map()
-      Array.from(word).forEach((char) => {
-        counts.set(char, 1 + (counts.get(char) || 0))
-      })
-      counts = Array.from(counts.entries())
-      let ret = counts
-        .map(([char, count]) => `${char}${count}`)
-        .sort()
-        .join("")
-      // console.debug({ word, ret, counts })
-      return ret
-    })
+    .map((word) => Array.from(word).sort().join(""))
     .join(" ")
 }
 
