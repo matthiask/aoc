@@ -1,5 +1,7 @@
 import { readFileSync } from "fs"
 const input = readFileSync("04.txt", { encoding: "utf-8" })
+  .split("\n")
+  .filter(Boolean)
 
 const isValidPart1 = (line) => {
   let seen = new Set()
@@ -17,11 +19,5 @@ const rearrange = (line) => {
     .join(" ")
 }
 
-console.log(
-  "part1",
-  input.split("\n").filter(Boolean).filter(isValidPart1).length,
-)
-console.log(
-  "part2",
-  input.split("\n").filter(Boolean).map(rearrange).filter(isValidPart1).length,
-)
+console.log("part1", input.filter(isValidPart1).length)
+console.log("part2", input.map(rearrange).filter(isValidPart1).length)
