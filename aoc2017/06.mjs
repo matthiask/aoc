@@ -14,12 +14,14 @@ const redistribute = (blocks) => {
 }
 
 const cycleAfter = (blocks) => {
-  const seen = new Set()
+  const seen = new Map()
   for (let i = 1; ; ++i) {
     blocks = redistribute(blocks)
     const key = blocks.join(",")
-    if (seen.has(key)) return i
-    seen.add(key)
+    if (seen.has(key)) {
+      return [i, i - seen.get(key)]
+    }
+    seen.set(key, i)
   }
 }
 
@@ -27,5 +29,5 @@ const cycleAfter = (blocks) => {
 // console.debug(redistribute(input))
 //
 
-console.debug("part1 test", cycleAfter([0, 2, 7, 0]))
-console.debug("part1", cycleAfter(input))
+console.debug("test", cycleAfter([0, 2, 7, 0]))
+console.debug("real", cycleAfter(input))
