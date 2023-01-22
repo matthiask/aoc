@@ -14,5 +14,11 @@ for line in IN:
 (root,) = tuple(set(nodes) - reduce(operator.or_, (pair[1] for pair in nodes.values())))
 
 
+def weight(node):
+    w, children = nodes[node]
+    return w + sum(weight(child) for child in children)
+
+
 # print(nodes)
 print("part1", root)
+print("part2", [(child, weight(child)) for child in nodes[root][1]])
