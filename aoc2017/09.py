@@ -25,6 +25,7 @@ def score(chars):
     idx = 0
     length = len(chars)
     depth = 0
+    non_canceled_garbage_characters = 0
 
     while idx < length:
         if chars[idx] == "{":
@@ -48,10 +49,12 @@ def score(chars):
                     break
                 else:
                     idx += 1
+                    non_canceled_garbage_characters += 1
         else:
             idx += 1
 
-    return score
+    print("part1", score)
+    print("part2", non_canceled_garbage_characters)
 
 
-print("part1", score(open_input("09").read().strip()))
+score(open_input("09").read().strip())
