@@ -24,12 +24,15 @@ def score(chars):
     score = 0
     idx = 0
     length = len(chars)
+    depth = 0
 
     while idx < length:
         if chars[idx] == "{":
             idx += 1
+            depth += 1
         elif chars[idx] == "}":
-            score += 1
+            score += depth
+            depth -= 1
             idx += 1
         elif chars[idx] == "!":
             # Skip next
