@@ -27,5 +27,18 @@ def part1():
     return len(group(parse(), 0))
 
 
+def part2():
+    connections = parse()
+    remaining = set(connections)
+    groups = 0
+    while remaining:
+        # any random member, really.
+        g = group(connections, min(remaining))
+        remaining -= g
+        groups += 1
+    return groups
+
+
 print(parse())
 print("part1", part1())
+print("part2", part2())
