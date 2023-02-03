@@ -1,8 +1,13 @@
+import re
 import sys
 
 
 def open_input(day):
     return open(f"{day}.txt" if len(sys.argv) < 2 else sys.argv[1])
+
+
+def numbers(line):
+    return [int(number) for number in re.findall(r"-?\d+", line)]
 
 
 def manhattan_distance(n):
