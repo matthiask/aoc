@@ -1,6 +1,6 @@
+use std::collections::HashMap;
 use std::fs;
 use std::io::{self, BufRead};
-use std::collections::HashMap;
 // use std::iter::zip;
 
 #[derive(Copy, Clone)]
