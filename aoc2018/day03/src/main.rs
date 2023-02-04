@@ -75,19 +75,15 @@ fn main() -> io::Result<()> {
 
     println!("part1: {}", more_than_one);
 
-    for i in 0..claims.len() {
-        let mut overlaps = false;
+    'outer: for i in 0..claims.len() {
         for j in 0..claims.len() {
             if i != j && claims[i].overlaps(&claims[j]) {
-                overlaps = true;
-                break;
+                continue 'outer;
             }
         }
 
-        if !overlaps {
-            println!("part2: {}", &claims[i].id);
-            break;
-        }
+        println!("part2: {}", &claims[i].id);
+        break;
     }
 
     Ok(())
