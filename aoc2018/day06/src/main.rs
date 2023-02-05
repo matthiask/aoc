@@ -3,7 +3,7 @@ use std::env;
 use std::fs;
 use std::io::{self, BufRead};
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 struct Coords {
     x: i32,
     y: i32,
