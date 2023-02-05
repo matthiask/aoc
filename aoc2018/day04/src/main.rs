@@ -5,6 +5,7 @@ use regex::Regex;
 struct Guard {
     id: usize,
     asleep: Vec<usize>,
+    asleep_sum: usize,
 }
 
 
@@ -30,6 +31,7 @@ fn main() -> io::Result<()> {
         let mut guard = Guard {
             id,
             asleep: vec![0; 60],
+            asleep_sum: 0,
         };
         println!("Guard {}", guard.id);
         line += 1;
@@ -49,6 +51,8 @@ fn main() -> io::Result<()> {
             for i in start..(end + 1) {
                 guard.asleep[i] = 1;
             }
+
+            guard.asleep_sum += end - start;
         }
     }
 
