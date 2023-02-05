@@ -49,6 +49,7 @@ fn nearest(coords: &Vec<Point>, point: &Point) -> usize {
         .collect();
     intermediate.sort_unstable_by(|a, b| a.1.cmp(&b.1));
     // println!("Point: {:?}, intermediate: {:?}", point, intermediate);
+    // TODO no nearest if equal distance from more than one point.
     intermediate[0].0
 }
 
