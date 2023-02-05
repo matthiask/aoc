@@ -1,3 +1,4 @@
+use std::cmp;
 use std::fs;
 
 fn react(s: &String) -> String {
@@ -32,5 +33,19 @@ fn main() {
     );
 
     let content = String::from(fs::read_to_string("05.txt").unwrap().trim());
-    println!("Part 1: {}", react(&content).len());
+    // println!("Part 1: {}", react(&content).len());
+
+    let mut min_length = 999999;
+    for c in 'a'..'{' {
+        println!("Char: {}", c);
+        let len = react(&String::from(
+            content
+                .replace(c, "")
+                .replace(char::from_u32((c as u32) - 32).unwrap(), ""),
+        ))
+        .len();
+        println!("Part 2: without char {}: {}", c, len);
+        min_length = cmp::min(min_length, len);
+    }
+    println!("Part 2: {}", min_length);
 }
