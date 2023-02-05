@@ -11,10 +11,7 @@ fn coords_from_str(s: &str) -> Coords {
     let pair = s.split_once(", ").unwrap();
     let x = pair.0.parse::<i32>().unwrap();
     let y = pair.1.parse::<i32>().unwrap();
-    Coords {
-        x,
-        y,
-    }
+    Coords { x, y }
 }
 
 fn main() {
@@ -22,7 +19,10 @@ fn main() {
     // let file = fs::File::open("06.txt").unwrap();
     let reader = io::BufReader::new(file);
 
-    let coords: Vec<Coords> = reader.lines().map(|line| coords_from_str(&line.unwrap())).collect();
+    let coords: Vec<Coords> = reader
+        .lines()
+        .map(|line| coords_from_str(&line.unwrap()))
+        .collect();
 
     println!("coords: {}", coords.len());
 }
