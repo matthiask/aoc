@@ -9,11 +9,32 @@ struct Coords {
     y: i32,
 }
 
+#[derive(Debug)]
+struct BBox {
+    x_min: i32,
+    x_max: i32,
+    y_min: i32,
+    y_max: i32,
+}
+
 fn coords_from_str(s: &str) -> Coords {
     let pair = s.split_once(", ").unwrap();
     let x = pair.0.parse::<i32>().unwrap();
     let y = pair.1.parse::<i32>().unwrap();
     Coords { x, y }
+}
+
+fn bbox_from_coords(coords: &Vec<Coords>) -> BBox {
+    let x_min = coords.iter().map(|c| c.x).min().unwrap();
+    let x_max = coords.iter().map(|c| c.x).max().unwrap();
+    let y_min = coords.iter().map(|c| c.y).min().unwrap();
+    let y_max = coords.iter().map(|c| c.y).max().unwrap();
+    return BBox {
+        x_min,
+        x_max,
+        y_min,
+        y_max,
+    };
 }
 
 fn manhattan_distance(c1: &Coords, c2: &Coords) -> i32 {
@@ -46,6 +67,7 @@ fn process(filename: &str) {
         .max()
         .unwrap();
     println!("max distance: {}", max_distance);
+    println!("Bounding box: {:?}", bbox_from_coords(&coords));
 }
 
 fn main() {
