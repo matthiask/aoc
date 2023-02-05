@@ -41,6 +41,17 @@ fn manhattan_distance(c1: &Coords, c2: &Coords) -> i32 {
     (c1.x - c2.x).abs() + (c1.y - c2.y).abs()
 }
 
+fn nearest(coords: &Vec<Coords>, point: &Coords) -> usize {
+    let mut intermediate: Vec<(usize, i32)> = coords
+        .iter()
+        .enumerate()
+        .map(|(idx, c)| (idx, manhattan_distance(c, point)))
+        .collect();
+    intermediate.sort_unstable_by(|a, b| a.1.cmp(&b.1));
+    // println!("Point: {:?}, intermediate: {:?}", point, intermediate);
+    intermediate[0].0
+}
+
 fn process(filename: &str) {
     let file = fs::File::open(filename).unwrap();
     let reader = io::BufReader::new(file);
@@ -68,6 +79,56 @@ fn process(filename: &str) {
         .unwrap();
     println!("max distance: {}", max_distance);
     println!("Bounding box: {:?}", bbox_from_coords(&coords));
+
+    let mut sizes: Vec<i64> = vec![0; coords.len()];
+    let bbox = bbox_from_coords(&coords);
+    /* Outside borders */
+    for x in bbox.x_min - 1..bbox.x_max + 1 {
+        sizes[nearest(
+            &coords,
+            &Coords {
+                x,
+                y: bbox.y_min - 1,
+            },
+        )] = i32::MAX as i64;
+        sizes[nearest(
+            &coords,
+            &Coords {
+                x,
+                y: bbox.y_max + 1,
+            },
+        )] = i32::MAX as i64;
+    }
+    for y in bbox.y_min - 1..bbox.y_max + 1 {
+        sizes[nearest(
+            &coords,
+            &Coords {
+                x: bbox.x_min - 1,
+                y,
+            },
+        )] = i32::MAX as i64;
+        sizes[nearest(
+            &coords,
+            &Coords {
+                x: bbox.x_max + 1,
+                y,
+            },
+        )] = i32::MAX as i64;
+    }
+    /* Inside */
+    for x in bbox.x_min..bbox.x_max {
+        for y in bbox.y_min..bbox.y_max {
+            sizes[nearest(&coords, &Coords { x, y })] += 1;
+        }
+    }
+    println!(
+        "Part 1: {}",
+        sizes
+            .iter()
+            .filter(|size| *size < &(i32::MAX as i64))
+            .max()
+            .unwrap()
+    );
 }
 
 fn main() {
