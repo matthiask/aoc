@@ -14,7 +14,7 @@ fn main() -> io::Result<()> {
     let file = fs::File::open("04.txt")?;
     let reader = io::BufReader::new(file);
     let result: Result<Vec<_>, _> = reader.lines().collect();
-    let mut lines = result.unwrap();
+    let mut lines = result?;
     lines.sort();
 
     // println!("Lines {}", lines.len());
@@ -102,6 +102,45 @@ fn main() -> io::Result<()> {
 
     println!("Sleepiest minute: {}", sleepiest_minute);
     println!("Part 1: {}", sleepiest_guard_id * sleepiest_minute);
+
+    let mut guards_asleep: HashMap<usize, [usize; 60]> = HashMap::new();
+    for guard in &guards {
+        match guards_asleep.get(&guard.id) {
+            Some(asleep) => {
+                guards_asleep.insert(
+                    guard.id,
+                    asleep
+                        .iter()
+                        .enumerate()
+                        .map(|(idx, val)| guard.asleep[idx] + val)
+                        .collect::<Vec<usize>>()
+                        .try_into()
+                        .unwrap(),
+                );
+            }
+            None => {
+                guards_asleep.insert(guard.id, guard.asleep);
+            }
+        }
+    }
+
+    {
+        let mut sleepiest_guard_id: usize = 0;
+        let mut sleepiest_minute: usize = 0;
+        let mut val: usize = 0;
+
+        for (guard_id, asleep) in guards_asleep.iter() {
+            for (minute, times) in asleep.iter().enumerate() {
+                if *times > val {
+                    sleepiest_guard_id = *guard_id;
+                    sleepiest_minute = minute;
+                    val = *times;
+                }
+            }
+        }
+
+        println!("Part 2: {}", sleepiest_guard_id * sleepiest_minute);
+    }
 
     Ok(())
 }
