@@ -3,9 +3,10 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::{self, BufRead};
 
+#[derive(Copy, Clone)]
 struct Guard {
     id: usize,
-    asleep: Vec<usize>,
+    asleep: [usize; 60],
     asleep_sum: usize,
 }
 
@@ -17,7 +18,7 @@ fn main() -> io::Result<()> {
     let mut lines = result.unwrap();
     lines.sort();
 
-    println!("Lines {}", lines.len());
+    // println!("Lines {}", lines.len());
 
     let timestamp_re = Regex::new(r"\d{4}-\d{2}-\d{2} \d{2}:(\d{2})").unwrap();
     let guard_re = Regex::new(r"Guard #(\d+)").unwrap();
@@ -30,10 +31,10 @@ fn main() -> io::Result<()> {
         let id = caps.get(1).unwrap().as_str().parse::<usize>().unwrap();
         let mut guard = Guard {
             id,
-            asleep: vec![0; 60],
+            asleep: [0; 60],
             asleep_sum: 0,
         };
-        println!("Guard {}", guard.id);
+        // println!("Guard {}", guard.id);
         line += 1;
 
         loop {
