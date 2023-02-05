@@ -1,7 +1,12 @@
 use std::fs;
 use std::io::{self, BufRead};
+use regex::Regex;
 
-type Guard = Vec<i32>;
+struct Guard {
+    id: usize,
+    asleep: Vec<usize>,
+}
+
 
 fn main() -> io::Result<()> {
     // let file = fs::File::open("04-test.txt")?;
@@ -13,20 +18,38 @@ fn main() -> io::Result<()> {
 
     println!("{}", lines.len());
 
+    let timestamp_re = Regex::new(r"\d{4}-\d{2}-\d{2} \d{2}:(\d{2})").unwrap();
+    let guard_re = Regex::new(r"Guard #(\d+)").unwrap();
+
     let mut guards: Vec<Guard> = Vec::new();
-    let iter = lines.iter();
+    let mut line = 0;
 
-    loop {
-        let mut guard: Guard = vec![0; 60];
-    }
+    while line < lines.len() {
+        let caps = guard_re.captures(&lines[line]).unwrap();
+        let id = caps.get(1).unwrap().as_str().parse::<usize>().unwrap();
+        let mut guard = Guard {
+            id,
+            asleep: vec![0; 60],
+        };
+        println!("Guard {}", guard.id);
+        line += 1;
 
+        loop {
+            if line >= lines.len() || lines[line].contains("Guard") {
+                guards.push(guard);
+                break;
+            }
 
-    for line in &lines {
-        // println!("{}", line);
-        let mut guard: Guard = vec![0; 60];
+            let start_caps = timestamp_re.captures(&lines[line]).unwrap();
+            let end_caps = timestamp_re.captures(&lines[line + 1]).unwrap();
+            let start = start_caps.get(1).unwrap().as_str().parse::<usize>().unwrap();
+            let end = end_caps.get(1).unwrap().as_str().parse::<usize>().unwrap();
+            line += 2;
 
-        let parts: Vec<&str> = line.split(&[' ', '#']).collect();
-
+            for i in start..(end + 1) {
+                guard.asleep[i] = 1;
+            }
+        }
     }
 
     Ok(())
