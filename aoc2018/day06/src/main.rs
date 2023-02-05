@@ -4,7 +4,7 @@ use std::fs;
 use std::io::{self, BufRead};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-struct Coords {
+struct Point {
     x: i32,
     y: i32,
 }
@@ -17,14 +17,14 @@ struct BBox {
     y_max: i32,
 }
 
-fn coords_from_str(s: &str) -> Coords {
+fn coords_from_str(s: &str) -> Point {
     let pair = s.split_once(", ").unwrap();
     let x = pair.0.parse::<i32>().unwrap();
     let y = pair.1.parse::<i32>().unwrap();
-    Coords { x, y }
+    Point { x, y }
 }
 
-fn bbox_from_coords(coords: &Vec<Coords>) -> BBox {
+fn bbox_from_coords(coords: &Vec<Point>) -> BBox {
     let x_min = coords.iter().map(|c| c.x).min().unwrap();
     let x_max = coords.iter().map(|c| c.x).max().unwrap();
     let y_min = coords.iter().map(|c| c.y).min().unwrap();
@@ -37,11 +37,11 @@ fn bbox_from_coords(coords: &Vec<Coords>) -> BBox {
     };
 }
 
-fn manhattan_distance(c1: &Coords, c2: &Coords) -> i32 {
+fn manhattan_distance(c1: &Point, c2: &Point) -> i32 {
     (c1.x - c2.x).abs() + (c1.y - c2.y).abs()
 }
 
-fn nearest(coords: &Vec<Coords>, point: &Coords) -> usize {
+fn nearest(coords: &Vec<Point>, point: &Point) -> usize {
     let mut intermediate: Vec<(usize, i32)> = coords
         .iter()
         .enumerate()
@@ -56,7 +56,7 @@ fn process(filename: &str) {
     let file = fs::File::open(filename).unwrap();
     let reader = io::BufReader::new(file);
 
-    let coords: Vec<Coords> = reader
+    let coords: Vec<Point> = reader
         .lines()
         .map(|line| coords_from_str(&line.unwrap()))
         .collect();
@@ -86,14 +86,14 @@ fn process(filename: &str) {
     for x in bbox.x_min - 1..bbox.x_max + 1 {
         sizes[nearest(
             &coords,
-            &Coords {
+            &Point {
                 x,
                 y: bbox.y_min - 1,
             },
         )] = i32::MAX as i64;
         sizes[nearest(
             &coords,
-            &Coords {
+            &Point {
                 x,
                 y: bbox.y_max + 1,
             },
@@ -102,14 +102,14 @@ fn process(filename: &str) {
     for y in bbox.y_min - 1..bbox.y_max + 1 {
         sizes[nearest(
             &coords,
-            &Coords {
+            &Point {
                 x: bbox.x_min - 1,
                 y,
             },
         )] = i32::MAX as i64;
         sizes[nearest(
             &coords,
-            &Coords {
+            &Point {
                 x: bbox.x_max + 1,
                 y,
             },
@@ -118,7 +118,7 @@ fn process(filename: &str) {
     /* Inside */
     for x in bbox.x_min..bbox.x_max {
         for y in bbox.y_min..bbox.y_max {
-            sizes[nearest(&coords, &Coords { x, y })] += 1;
+            sizes[nearest(&coords, &Point { x, y })] += 1;
         }
     }
     println!(
