@@ -81,8 +81,9 @@ fn main() -> io::Result<()> {
     );
 
     let sleepiest_guard_nights: Vec<Guard> = guards
-        .into_iter()
+        .iter()
         .filter(|g| g.id == sleepiest_guard_id)
+        .copied()
         .collect();
     let mut sleepiest_minute: usize = 0;
     let mut sleepiest_minute_minutes: usize = 0;
