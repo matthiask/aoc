@@ -1,20 +1,10 @@
 def read():
-    with open("01.txt") as f:
-        lines = f.read().splitlines()
-
-    group = []
-    for line in lines:
-        if line:
-            group.append(int(line))
-        else:
-            yield group
-            group = []
-    if group:
-        yield group
+    groups = open("01.txt").read().strip().split("\n\n")
+    return [[int(line) for line in group.split("\n")] for group in groups]
 
 
 def main():
-    groups = list(read())
+    groups = read()
     carrying = [sum(group) for group in groups]
     print(max(carrying))
 
