@@ -1,4 +1,5 @@
 use itertools::iproduct;
+use std::env;
 use std::fs;
 use std::io::{self, BufRead};
 
@@ -19,9 +20,8 @@ fn manhattan_distance(c1: &Coords, c2: &Coords) -> i32 {
     (c1.x - c2.x).abs() + (c1.y - c2.y).abs()
 }
 
-fn main() {
-    let file = fs::File::open("06-test.txt").unwrap();
-    // let file = fs::File::open("06.txt").unwrap();
+fn process(filename: &str) {
+    let file = fs::File::open(filename).unwrap();
     let reader = io::BufReader::new(file);
 
     let coords: Vec<Coords> = reader
@@ -46,4 +46,10 @@ fn main() {
         .max()
         .unwrap();
     println!("max distance: {}", max_distance);
+}
+
+fn main() {
+    for filename in env::args().skip(1) {
+        process(&filename);
+    }
 }
