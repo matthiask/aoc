@@ -7,7 +7,6 @@ use std::io::{self, BufRead};
 struct Guard {
     id: usize,
     asleep: [usize; 60],
-    asleep_sum: usize,
 }
 
 fn main() -> io::Result<()> {
@@ -32,7 +31,6 @@ fn main() -> io::Result<()> {
         let mut guard = Guard {
             id,
             asleep: [0; 60],
-            asleep_sum: 0,
         };
         // println!("Guard {}", guard.id);
         line += 1;
@@ -57,8 +55,6 @@ fn main() -> io::Result<()> {
             for i in start..end {
                 guard.asleep[i] = 1;
             }
-
-            guard.asleep_sum += end - start;
         }
     }
 
@@ -66,7 +62,7 @@ fn main() -> io::Result<()> {
     for guard in &guards {
         most_asleep.insert(
             guard.id,
-            most_asleep.get(&guard.id).unwrap_or(&0) + guard.asleep_sum,
+            most_asleep.get(&guard.id).unwrap_or(&0) + guard.asleep.iter().sum::<usize>(),
         );
     }
 
