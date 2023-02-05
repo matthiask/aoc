@@ -53,7 +53,7 @@ fn main() -> io::Result<()> {
             let end = end_caps.get(1).unwrap().as_str().parse::<usize>().unwrap();
             line += 2;
 
-            for i in start..(end + 1) {
+            for i in start..end {
                 guard.asleep[i] = 1;
             }
 
