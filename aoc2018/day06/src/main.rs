@@ -1,3 +1,4 @@
+use itertools::iproduct;
 use std::fs;
 use std::io::{self, BufRead};
 
@@ -39,4 +40,10 @@ fn main() {
             );
         }
     }
+
+    let max_distance = iproduct!(&coords, &coords)
+        .map(|(c1, c2)| manhattan_distance(c1, c2))
+        .max()
+        .unwrap();
+    println!("max distance: {}", max_distance);
 }
