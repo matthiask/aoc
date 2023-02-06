@@ -30,7 +30,6 @@ fn process(filename: &str) {
 }
 
 fn main() {
-    for filename in env::args().skip(1) {
-        process(&filename);
-    }
+    let args: Vec<String> = env::args().collect();
+    process(args.get(1).unwrap_or(&String::from("input.txt")));
 }
