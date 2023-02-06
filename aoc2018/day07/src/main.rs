@@ -5,15 +5,20 @@ use std::io::{self, BufRead};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 struct Before {
-    before: char,
-    after: char,
+    required: char,
+    step: char,
+    seconds: u32,
 }
 
 fn parse_before(s: &str) -> Before {
     let tokens: Vec<&str> = s.split_whitespace().collect();
+    let required = tokens[1].chars().next().unwrap();
+    let step = tokens[7].chars().next().unwrap();
+    let seconds = (step as u32) - 64 + 60;
     Before {
-        before: tokens[1].chars().next().unwrap(),
-        after: tokens[7].chars().next().unwrap(),
+        required,
+        step,
+        seconds,
     }
 }
 
@@ -32,8 +37,8 @@ fn process(filename: &str) {
     let mut todo: HashSet<char> = HashSet::new();
     let mut seen: HashSet<char> = HashSet::new();
     for pair in &pairs {
-        todo.insert(pair.before);
-        todo.insert(pair.after);
+        todo.insert(pair.required);
+        todo.insert(pair.step);
     }
     println!("{:?}", &todo);
 
@@ -45,8 +50,8 @@ fn process(filename: &str) {
             .filter(|c| {
                 pairs
                     .iter()
-                    .filter(|p| p.after == **c)
-                    .all(|p| seen.contains(&p.before))
+                    .filter(|p| p.step == **c)
+                    .all(|p| seen.contains(&p.required))
             })
             .copied()
             .collect();
