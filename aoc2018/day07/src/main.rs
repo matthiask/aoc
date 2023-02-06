@@ -30,12 +30,40 @@ fn process(filename: &str) {
     println!("{:?}", &pairs);
 
     let mut todo: HashSet<char> = HashSet::new();
-    for pair in pairs {
+    let mut seen: HashSet<char> = HashSet::new();
+    for pair in &pairs {
         todo.insert(pair.before);
         todo.insert(pair.after);
     }
-
     println!("{:?}", &todo);
+
+    let mut result: Vec<char> = vec![];
+
+    while todo.len() > 0 {
+        let mut next: Vec<char> = todo
+            .iter()
+            .filter(|c| {
+                pairs
+                    .iter()
+                    .filter(|p| p.after == **c)
+                    .all(|p| seen.contains(&p.before))
+            })
+            .copied()
+            .collect();
+        next.sort();
+        println!("{:?}", next);
+        for c in next {
+            todo.remove(&c);
+            seen.insert(c);
+
+            result.push(c);
+
+            // Only always take the first and begin again; toposort would have been nice as well...
+            break;
+        }
+    }
+
+    println!("Part 1: {}", result.into_iter().collect::<String>());
 }
 
 fn main() {
