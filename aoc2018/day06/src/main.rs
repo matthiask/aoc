@@ -41,7 +41,7 @@ fn manhattan_distance(c1: &Point, c2: &Point) -> i32 {
     (c1.x - c2.x).abs() + (c1.y - c2.y).abs()
 }
 
-fn nearest(coords: &Vec<Point>, point: &Point) -> usize {
+fn nearest(coords: &Vec<Point>, point: &Point) -> Option<usize> {
     let mut intermediate: Vec<(usize, i32)> = coords
         .iter()
         .enumerate()
@@ -49,8 +49,10 @@ fn nearest(coords: &Vec<Point>, point: &Point) -> usize {
         .collect();
     intermediate.sort_unstable_by(|a, b| a.1.cmp(&b.1));
     // println!("Point: {:?}, intermediate: {:?}", point, intermediate);
-    // TODO no nearest if equal distance from more than one point.
-    intermediate[0].0
+    if intermediate[0].1 != intermediate[1].1 {
+        return Some(intermediate[0].0);
+    }
+    None
 }
 
 fn process(filename: &str) {
@@ -85,41 +87,51 @@ fn process(filename: &str) {
     let bbox = bbox_from_coords(&coords);
     /* Outside borders */
     for x in bbox.x_min - 1..bbox.x_max + 1 {
-        sizes[nearest(
+        if let Some(id) = nearest(
             &coords,
             &Point {
                 x,
                 y: bbox.y_min - 1,
             },
-        )] = i32::MAX as i64;
-        sizes[nearest(
+        ) {
+            sizes[id] = i32::MAX as i64;
+        }
+        if let Some(id) = nearest(
             &coords,
             &Point {
                 x,
                 y: bbox.y_max + 1,
             },
-        )] = i32::MAX as i64;
+        ) {
+            sizes[id] = i32::MAX as i64;
+        }
     }
     for y in bbox.y_min - 1..bbox.y_max + 1 {
-        sizes[nearest(
+        if let Some(id) = nearest(
             &coords,
             &Point {
                 x: bbox.x_min - 1,
                 y,
             },
-        )] = i32::MAX as i64;
-        sizes[nearest(
+        ) {
+            sizes[id] = i32::MAX as i64;
+        }
+        if let Some(id) = nearest(
             &coords,
             &Point {
                 x: bbox.x_max + 1,
                 y,
             },
-        )] = i32::MAX as i64;
+        ) {
+            sizes[id] = i32::MAX as i64;
+        }
     }
     /* Inside */
     for x in bbox.x_min..bbox.x_max {
         for y in bbox.y_min..bbox.y_max {
-            sizes[nearest(&coords, &Point { x, y })] += 1;
+            if let Some(id) = nearest(&coords, &Point { x, y }) {
+                sizes[id] += 1;
+            }
         }
     }
     println!(
