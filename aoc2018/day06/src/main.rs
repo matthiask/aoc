@@ -142,6 +142,25 @@ fn process(filename: &str) {
             .max()
             .unwrap()
     );
+
+    // let max_distance: i32 = 32;
+    let max_distance: i32 = 10000;
+
+    let extend_by: i32 = max_distance / (coords.len() as i32);
+    let mut within = 0;
+    for x in (bbox.x_min - extend_by)..(bbox.x_max + extend_by) {
+        for y in (bbox.y_min - extend_by)..(bbox.y_max + extend_by) {
+            let sum: i32 = coords
+                .iter()
+                .map(|c| manhattan_distance(c, &Point { x, y }))
+                .sum();
+            if sum < max_distance {
+                within += 1;
+            }
+        }
+    }
+
+    println!("Part 2: {}", within);
 }
 
 fn main() {
