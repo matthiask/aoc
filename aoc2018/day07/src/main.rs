@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::env;
 use std::fs;
 use std::io::{self, BufRead};
@@ -20,13 +21,21 @@ fn process(filename: &str) {
     let file = fs::File::open(filename).unwrap();
     let reader = io::BufReader::new(file);
 
-    let coords: Vec<Before> = reader
+    let pairs: Vec<Before> = reader
         .lines()
         .map(|line| parse_before(&line.unwrap()))
         .collect();
 
-    println!("pairs: {}", coords.len());
-    println!("{:?}", &coords);
+    println!("pairs: {}", pairs.len());
+    println!("{:?}", &pairs);
+
+    let mut todo: HashSet<char> = HashSet::new();
+    for pair in pairs {
+        todo.insert(pair.before);
+        todo.insert(pair.after);
+    }
+
+    println!("{:?}", &todo);
 }
 
 fn main() {
