@@ -9,6 +9,9 @@ struct Point {
     velocity: (i32, i32),
 }
 
+type Points = Vec<Point>;
+type Positions = Vec<(i32, i32)>;
+
 impl Point {
     fn position(&self, time: i32) -> (i32, i32) {
         (
@@ -20,14 +23,14 @@ impl Point {
 
 fn parse_point(line: &str) -> Point {
     let numbers_re = Regex::new(r"([-\d]+)").unwrap();
-    let tokens: Vec<i32> = numbers_re
+    let numbers: Vec<i32> = numbers_re
         .captures_iter(&line)
         .map(|c| c.get(1).unwrap().as_str().parse::<i32>().unwrap())
         .collect();
 
     Point {
-        initial: (tokens[0], tokens[1]),
-        velocity: (tokens[2], tokens[3]),
+        initial: (numbers[0], numbers[1]),
+        velocity: (numbers[2], numbers[3]),
     }
 }
 
@@ -35,9 +38,14 @@ fn process(filename: &str) {
     let file = fs::File::open(filename).unwrap();
     let reader = io::BufReader::new(file);
 
-    let points: Vec<Point> = reader.lines().map(|c| parse_point(&c.unwrap())).collect();
+    let points: Points = reader.lines().map(|c| parse_point(&c.unwrap())).collect();
 
     println!("{points:?}");
+
+    for time in 0..10 {
+        let positions: Positions = points.iter().map(|point| point.position(time)).collect();
+        println!("{positions:?}");
+    }
 
     // println!("part 1: {}", metadata.iter().sum::<i32>());
     // println!("part 2: {}", node_value(&mut numbers.iter()));
