@@ -42,10 +42,24 @@ fn process(filename: &str) {
 
     println!("{points:?}");
 
-    for time in 0..10 {
+    let mut time = 0;
+    loop {
         let positions: Positions = points.iter().map(|point| point.position(time)).collect();
-        println!("{positions:?}");
+
+        let y_max = positions.iter().map(|p| p.1).max().unwrap();
+        let y_min = positions.iter().map(|p| p.1).min().unwrap();
+
+        if y_max - y_min <= 7 {
+            break;
+        }
+
+        time += 1;
+
+        // println!("{positions:?}");
+        // println!("y diff: {}",y_max - y_min);
     }
+
+    println!("Time {}", time);
 
     // println!("part 1: {}", metadata.iter().sum::<i32>());
     // println!("part 2: {}", node_value(&mut numbers.iter()));
