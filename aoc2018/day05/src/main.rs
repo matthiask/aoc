@@ -1,7 +1,7 @@
 use std::cmp;
 use std::fs;
 
-fn react(s: &String) -> String {
+fn react(s: &str) -> String {
     let mut chars: Vec<char> = s.chars().collect();
     let mut i = 0;
 
@@ -39,11 +39,11 @@ fn main() {
 
     let mut min_length = 999999;
     for c in 'a'..'{' {
-        let len = react(&String::from(
-            content
+        let len = react(
+            &content
                 .replace(c, "")
                 .replace(char::from_u32((c as u32) - 32).unwrap(), ""),
-        ))
+        )
         .len();
         println!("Part 2: without char {}: {}", c, len);
         min_length = cmp::min(min_length, len);

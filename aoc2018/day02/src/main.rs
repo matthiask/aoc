@@ -42,7 +42,7 @@ fn find_closest_strings(lines: &Vec<String>) -> (usize, usize) {
     (0, 0)
 }
 
-fn remove_mismatch(a: &String, b: &String) -> String {
+fn remove_mismatch(a: &str, b: &str) -> String {
     let zipper = zip(a.chars(), b.chars());
     let mut chars: Vec<char> = Vec::new();
 
