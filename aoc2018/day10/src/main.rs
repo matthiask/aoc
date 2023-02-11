@@ -12,6 +12,22 @@ struct Point {
 type Points = Vec<Point>;
 type Positions = Vec<(i32, i32)>;
 
+struct BoundingBox(i32, i32, i32, i32);
+
+impl BoundingBox {
+    fn from_positions(positions: &Positions) -> Self {
+        let x: Vec<i32> = positions.iter().map(|p| p.0).collect();
+        let y: Vec<i32> = positions.iter().map(|p| p.1).collect();
+
+        BoundingBox(
+            *x.iter().min().unwrap(),
+            *y.iter().min().unwrap(),
+            *x.iter().max().unwrap(),
+            *y.iter().max().unwrap(),
+        )
+    }
+}
+
 impl Point {
     fn position(&self, time: i32) -> (i32, i32) {
         (
@@ -34,6 +50,33 @@ fn parse_point(line: &str) -> Point {
     }
 }
 
+fn print(positions: &Positions) {
+    let bbox = BoundingBox::from_positions(positions);
+
+    let width = (bbox.2 - bbox.0 + 1) as usize;
+    let height = (bbox.3 - bbox.1 + 1) as usize;
+
+    if width < 100 && height < 100 {
+        let mut grid: Vec<Vec<char>> = Vec::new();
+        for _y in 0..height {
+            let mut row: Vec<char> = vec![' '; width];
+            // row.fill(' ');
+            grid.push(row);
+        }
+        for p in positions {
+            grid[(p.1 - bbox.1) as usize][(p.0 - bbox.0) as usize] = 'x';
+        }
+
+        println!("");
+        for row in grid {
+            println!("{}", row.into_iter().collect::<String>());
+        }
+        println!("");
+    } else {
+        println!("Too large");
+    }
+}
+
 fn process(filename: &str) {
     let file = fs::File::open(filename).unwrap();
     let reader = io::BufReader::new(file);
@@ -46,20 +89,14 @@ fn process(filename: &str) {
     loop {
         let positions: Positions = points.iter().map(|point| point.position(time)).collect();
 
-        let y_max = positions.iter().map(|p| p.1).max().unwrap();
-        let y_min = positions.iter().map(|p| p.1).min().unwrap();
-
-        if y_max - y_min <= 7 {
-            break;
-        }
+        println!("Time {}", time);
+        print(&positions);
 
         time += 1;
 
         // println!("{positions:?}");
         // println!("y diff: {}",y_max - y_min);
     }
-
-    println!("Time {}", time);
 
     // println!("part 1: {}", metadata.iter().sum::<i32>());
     // println!("part 2: {}", node_value(&mut numbers.iter()));
