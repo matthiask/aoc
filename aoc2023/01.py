@@ -25,11 +25,11 @@ def extract2(line):
     last_value = 0
     for s, i in digits.items():
         idx = line.find(s)
-        if idx >= 0 and idx < first_index:
+        if 0 <= idx < first_index:
             first_index = idx
             first_value = i
         idx = line.rfind(s)
-        if idx >= 0 and idx > last_index:
+        if idx > last_index:
             last_index = idx
             last_value = i
     print(line.strip(), first_value, last_value)
