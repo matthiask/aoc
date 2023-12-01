@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field, replace
 from itertools import cycle
 from time import monotonic
-from typing import List
 
 
 rocks = """\
@@ -37,7 +36,7 @@ RIGHT = 1
 @dataclass
 class Rock:
     pattern: str
-    bits: List[int]
+    bits: list[int]
 
     def shift(self, direction):
         if direction == "<":
@@ -53,7 +52,7 @@ class Rock:
 
 @dataclass
 class Chamber:
-    bits: List[int] = field(default_factory=list)
+    bits: list[int] = field(default_factory=list)
 
     @property
     def rows(self):

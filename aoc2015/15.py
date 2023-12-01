@@ -26,7 +26,7 @@ def score(combination):
 
     return reduce(
         operator.mul,
-        (max(0, value) for prop, value in values.items() if not prop == "calories"),
+        (max(0, value) for prop, value in values.items() if prop != "calories"),
         1,
     )
 

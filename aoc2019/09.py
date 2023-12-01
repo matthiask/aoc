@@ -83,8 +83,8 @@ def run(program, inputs):
 
 
 def run2(program):
-    for noun in range(0, 100):
-        for verb in range(0, 100):
+    for noun in range(100):
+        for verb in range(100):
             modified = program[:]
             modified[1] = noun
             modified[2] = verb

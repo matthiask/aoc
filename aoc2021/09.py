@@ -18,7 +18,7 @@ def is_low_point(point):
 
 
 def find_low_points():
-    all_points = ((x, y) for x in range(0, max_x) for y in range(0, max_y))
+    all_points = ((x, y) for x in range(max_x) for y in range(max_y))
     return [point for point in all_points if is_low_point(point)]
 
 

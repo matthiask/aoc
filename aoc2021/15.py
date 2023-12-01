@@ -1,6 +1,4 @@
 import heapq
-import operator
-from functools import reduce
 
 
 with open("15.txt") as f:

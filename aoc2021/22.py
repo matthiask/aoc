@@ -16,7 +16,6 @@ import re
 import time
 from dataclasses import dataclass
 from itertools import chain, product
-from typing import Tuple
 
 
 # All ranges are [from, to)
@@ -24,9 +23,9 @@ from typing import Tuple
 
 @dataclass
 class Cube:
-    x: Tuple[int, int]
-    y: Tuple[int, int]
-    z: Tuple[int, int]
+    x: tuple[int, int]
+    y: tuple[int, int]
+    z: tuple[int, int]
 
     @property
     def volume(self):

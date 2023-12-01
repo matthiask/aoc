@@ -108,8 +108,7 @@ def find_explodable(node):
 
     for n, depth in dfs_iter:
         if (
-            depth == 4
-            and isinstance(n, Branch)
+            depth == 4 and isinstance(n, Branch)
             # The following is always true:
             # and isinstance(n.left, Leaf)
             # and isinstance(n.right, Leaf)

@@ -1,7 +1,6 @@
 import re
 from collections import defaultdict
 from itertools import repeat
-from pprint import pprint
 
 
 with open("05.txt") as f:

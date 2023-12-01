@@ -1,7 +1,3 @@
-import operator
-from functools import reduce
-
-
 with open("11.txt") as f:
     INITIAL = {
         (x, y): int(h) for y, line in enumerate(f) for x, h in enumerate(line.strip())

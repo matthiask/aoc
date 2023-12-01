@@ -19,8 +19,8 @@ def part1(forest):
     forest_x = len(forest[0])
     forest_y = len(forest)
 
-    forest_x_range = list(range(0, len(forest[0])))
-    forest_y_range = list(range(0, len(forest)))
+    forest_x_range = list(range(len(forest[0])))
+    forest_y_range = list(range(len(forest)))
 
     # Edges are all visible
     visible = set()

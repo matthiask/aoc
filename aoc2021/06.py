@@ -1,5 +1,4 @@
 from collections import Counter
-from itertools import chain
 
 
 with open("06.txt") as f:
@@ -30,7 +29,7 @@ with open("06.txt") as f:
 counter = Counter()
 counter.update(INITIAL)
 
-generation = [counter.get(days, 0) for days in range(0, 9)]
+generation = [counter.get(days, 0) for days in range(9)]
 
 
 def cycle(generation):

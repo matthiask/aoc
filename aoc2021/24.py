@@ -9,7 +9,7 @@ def is_valid(model_number):
     def value(v):
         return variables[v] if v in variables else int(v)
 
-    while IP < len(IN):
+    while len(IN) > IP:
         op = IN[IP]
         if op[0] == "inp":
             variables[op[1]] = int(next(input))

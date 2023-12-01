@@ -6,7 +6,7 @@ WINS = []
 # Horizontally
 WINS.extend(list(range(start, start + 5)) for start in range(0, 25, 5))
 # Vertically
-WINS.extend(list(range(start, start + 25, 5)) for start in range(0, 5))
+WINS.extend(list(range(start, start + 25, 5)) for start in range(5))
 
 
 with open("04.txt") as f:

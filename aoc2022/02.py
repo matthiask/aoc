@@ -2,8 +2,6 @@
 # Paper B Y
 # Scissors C Z
 
-from pprint import pprint
-
 
 choice_scores = {
     "A": 1,

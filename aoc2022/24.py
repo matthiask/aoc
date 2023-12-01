@@ -13,7 +13,6 @@ O = (0, 0)
 
 from dataclasses import dataclass
 from itertools import count
-from typing import List
 
 
 _directions = {
@@ -37,7 +36,7 @@ _move_cost = {
 class Blizzard:
     initial: complex
     direction: str
-    bounds: List[int]
+    bounds: list[int]
 
     def at(self, step):
         d = _directions[self.direction]
@@ -48,8 +47,8 @@ class Blizzard:
 
 @dataclass
 class Puzzle:
-    blizzards: List[Blizzard]
-    bounds: List[int]
+    blizzards: list[Blizzard]
+    bounds: list[int]
     entry: complex
     exit: complex
 

@@ -1,7 +1,6 @@
 import re
 from collections import deque, namedtuple
 from itertools import zip_longest
-from pprint import pprint
 
 
 Op = namedtuple("Op", "count from_ to_")

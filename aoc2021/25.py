@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from typing import Set, Tuple
 
 
 @dataclass
 class Puzzle:
-    east: Set[complex]
-    south: Set[complex]
-    bounds: Tuple[int, int]
+    east: set[complex]
+    south: set[complex]
+    bounds: tuple[int, int]
 
     def occupied(self):
         return self.east | self.south

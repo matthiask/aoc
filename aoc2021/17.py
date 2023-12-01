@@ -1,6 +1,5 @@
 import re
 from itertools import count
-from pprint import pprint
 
 
 def read():

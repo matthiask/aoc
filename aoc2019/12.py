@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from typing import List
 
 
 IN = [*open("12.txt")]
@@ -8,8 +7,8 @@ IN = [*open("12.txt")]
 
 @dataclass
 class Moon:
-    position: List[int]
-    velocity: List[int]
+    position: list[int]
+    velocity: list[int]
 
     def move(self):
         for i, v in enumerate(self.velocity):
