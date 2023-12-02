@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from functools import reduce
 from pprint import pprint
 
 from tools import open_input
@@ -16,6 +17,16 @@ class Sample:
             and self.green <= other.green
             and self.blue <= other.blue
         )
+
+    def minimum_possible(self, other):
+        return Sample(
+            red=max(self.red, other.red),
+            green=max(self.green, other.green),
+            blue=max(self.blue, other.blue),
+        )
+
+    def power(self):
+        return self.red * self.green * self.blue
 
 
 @dataclass
@@ -52,4 +63,14 @@ def solve1():
     pprint(possible_id_sum)
 
 
+def solve2():
+    powers = 0
+    for game in games(IN):
+        sample = reduce(lambda a, b: a.minimum_possible(b), game.samples)
+        powers += sample.power()
+
+    pprint(powers)
+
+
 solve1()
+solve2()
