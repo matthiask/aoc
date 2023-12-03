@@ -32,6 +32,7 @@ def parse():
     )
     numbers = dict(numbers)
 
+    """
     pprint(
         {
             "symbols": symbols,
@@ -39,6 +40,7 @@ def parse():
             "neighbors_of_symbols": neighbors_of_symbols,
         }
     )
+    """
 
     return symbols, numbers, neighbors_of_symbols
 
@@ -59,4 +61,29 @@ def solve1():
     )
 
 
+def solve2():
+    symbols, numbers, neighbors_of_symbols = parse()
+
+    numbers_with_locations = [
+        [number, number_locations(xy, number)] for xy, number in numbers.items()
+    ]
+    # pprint(numbers_with_locations)
+
+    gears = []
+    for xy, symbol in symbols.items():
+        if symbol != "*":
+            continue
+
+        adjacent_numbers = [
+            number
+            for number, locations in numbers_with_locations
+            if set(neighbors(xy, diagonal=True)) & locations
+        ]
+        if len(adjacent_numbers) == 2:
+            gears.append(int(adjacent_numbers[0]) * int(adjacent_numbers[1]))
+
+    pprint(sum(gears))
+
+
 solve1()
+solve2()
