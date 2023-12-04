@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dataclasses import dataclass
 from pprint import pprint
 
@@ -12,6 +13,9 @@ class Card:
     id: int
     winning: set[int]
     have: set[int]
+
+    def same(self):
+        return len(self.winning & self.have)
 
     def point_value(self):
         same = len(self.winning & self.have)
@@ -37,7 +41,14 @@ def solve1():
 
 
 def solve2():
-    pass
+    cards = list(parse())
+    factor = defaultdict(lambda: 1, ((card.id, 1) for card in cards))
+    for card in cards:
+        factor.setdefault(card.id, 1)
+        for i in range(card.same()):
+            factor[card.id + 1 + i] += factor[card.id]
+    pprint(factor)
+    pprint(sum(factor.values()))
 
 
 solve1()
