@@ -22,6 +22,37 @@ class Range:
             return self.dst + delta
         return number
 
+    @property
+    def src_min(self):
+        return self.src
+
+    @property
+    def src_max(self):
+        return self.src + self.len - 1
+
+    def overlaps(self, range2):
+        return range2.max > self.src_min and range2.min < self.src_max
+
+    def map2(self, range2):
+        if range2.max < self.src_min or range2.min > self.src_max:
+            yield range2
+        else:
+            # Part of range2 below self
+            below = self.src_min - range2.min
+            if below > 0:
+                yield Range2(range2.min, below)
+
+            # Part of range2 above self
+            above = range2.max - self.src_max
+            if above > 0:
+                yield Range2(self.src_max + 1, above)
+
+            if (len := range2.len - max(below, 0) - max(above, 0)) > 0:
+                yield Range2(
+                    self.dst + self.src_min - range2.min,
+                    len,
+                )
+
 
 @dataclass
 class Map:
@@ -71,7 +102,7 @@ def solve1():
         final.append(number)
         # pprint(number)
 
-    pprint(min(final))
+    pprint(("part1", min(final)))
 
 
 @dataclass
@@ -79,12 +110,30 @@ class Range2:
     min: int
     len: int
 
+    @property
+    def max(self):
+        return self.min + self.len - 1
+
 
 def solve2():
     n = numbers(parts[0])
     ranges = []
     for i in range(0, len(n), 2):
         ranges.append(Range2(*n[i : i + 2]))
+    pprint(ranges)
+    maps = parse_maps()
+
+    type = "seed"
+    while type in maps:
+        new_ranges = []
+        for range2 in ranges:
+            for r in maps[type].ranges:
+                if r.overlaps(range2):
+                    new_ranges.extend(r.map2(range2))
+        ranges = new_ranges
+        pprint((type, ranges))
+        type = maps[type].dst
+
     pprint(ranges)
 
 
