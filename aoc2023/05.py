@@ -37,12 +37,6 @@ class Map:
         return number
 
 
-@dataclass
-class Range2:
-    min: int
-    len: int
-
-
 def parse_maps():
     maps = {}
     for map in parts[1:]:
@@ -80,8 +74,18 @@ def solve1():
     pprint(min(final))
 
 
+@dataclass
+class Range2:
+    min: int
+    len: int
+
+
 def solve2():
-    pass
+    n = numbers(parts[0])
+    ranges = []
+    for i in range(0, len(n), 2):
+        ranges.append(Range2(*n[i : i + 2]))
+    pprint(ranges)
 
 
 solve1()
