@@ -30,8 +30,6 @@ extend-select = [
   "INT",
   # pygrep-hooks
   "PGH",
-  # pylint
-  "PLC", "PLE", "PLW",
   # unused noqa
   "RUF100",
 ]

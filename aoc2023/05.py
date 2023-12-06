@@ -4,7 +4,7 @@ from pprint import pprint
 from tools import numbers, open_input
 
 
-IN = [line.strip() for line in open_input("05")]
+parts = open_input("05").read().strip().split("\n\n")
 
 
 @dataclass
@@ -37,10 +37,13 @@ class Map:
         return number
 
 
-def parse():
-    parts = open_input("05").read().strip().split("\n\n")
+@dataclass
+class Range2:
+    min: int
+    len: int
 
-    seeds = numbers(parts[0])
+
+def parse_maps():
     maps = {}
     for map in parts[1:]:
         lines = map.split("\n")
@@ -51,16 +54,18 @@ def parse():
             ranges=[Range(*numbers(line)) for line in lines[1:]],
         )
 
-    return seeds, maps
+    return maps
 
 
 def solve1():
-    seeds, maps = parse()
-    pprint(seeds)
-    pprint(maps)
+    seeds = numbers(parts[0])
+    maps = parse_maps()
 
-    for number in (0, 50, 96, 98, 100):
-        pprint((number, maps["seed"].map(number)))
+    # pprint(seeds)
+    # pprint(maps)
+
+    # for number in (0, 50, 96, 98, 100):
+    #     pprint((number, maps["seed"].map(number)))
 
     final = []
 
@@ -70,7 +75,7 @@ def solve1():
             number = maps[type].map(number)
             type = maps[type].dst
         final.append(number)
-        pprint(number)
+        # pprint(number)
 
     pprint(min(final))
 
