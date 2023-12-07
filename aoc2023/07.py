@@ -9,24 +9,24 @@ strengths = {
 }
 
 
-def analyze(hand):
+def type(hand):
     counts = Counter(hand).most_common()
     groups = [c[1] for c in counts]
 
     if groups == [5]:
-        return 10, "five", counts
+        return 10, "five"
     if groups == [4, 1]:
-        return 8, "four", counts
+        return 8, "four"
     if groups == [3, 2]:
-        return 6, "full house", counts
+        return 6, "full house"
     if groups[0] == 3:
-        return 5, "three of a kind", counts
+        return 5, "three of a kind"
     if groups == [2, 2, 1]:
-        return 4, "two pair", counts
+        return 4, "two pair"
     if groups[0] == 2:
-        return 3, "one pair", counts
+        return 3, "one pair"
     if groups == [1, 1, 1, 1, 1]:
-        return 2, "high card", counts
+        return 2, "high card"
 
     raise Exception()
 
@@ -36,8 +36,8 @@ def hand_to_strengths(hand):
 
 
 def one_beats_two(hand1, hand2):
-    h1 = analyze(hand1)
-    h2 = analyze(hand2)
+    h1 = type(hand1)
+    h2 = type(hand2)
 
     # Different type
     if h1[0] != h2[0]:
@@ -56,7 +56,7 @@ def one_beats_two(hand1, hand2):
 def test():
     pp(strengths)
     for hand in ("AAAAA", "AA8AA", "23332", "TTT98", "23432", "A23A4", "23456"):
-        pp((hand, analyze(hand)))
+        pp((hand, type(hand)))
 
 
 def solve1():
@@ -72,11 +72,11 @@ def solve1():
 
     hands = sorted(
         hands_and_bids.keys(),
-        key=lambda hand: (analyze(hand)[0], hand_to_strengths(hand)),
+        key=lambda hand: (type(hand)[0], hand_to_strengths(hand)),
     )
     pp(hands)
 
-    pp({hand: (analyze(hand)[0], hand_to_strengths(hand)) for hand in hands})
+    pp({hand: (type(hand)[0], hand_to_strengths(hand)) for hand in hands})
 
     pp(
         (
