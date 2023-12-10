@@ -1,6 +1,6 @@
 from pprint import pp
 
-from tools import open_input
+from tools import open_input, range_inclusive
 
 
 N = -1j
@@ -45,7 +45,7 @@ def connects_to(grid, xy):
     return connected
 
 
-def solve1():
+def find_path():
     start, grid = parse()
     path = [start]
     while True:
@@ -53,8 +53,35 @@ def solve1():
         if not next_xy:
             break
         path.append(next_xy[0])
-    # pp(path)
-    pp(("part1", len(path) // 2))
+    return path
+
+
+def solve1():
+    pp(("part1", len(find_path()) // 2))
+
+
+def solve2():
+    path = set(find_path())
+
+    x_range = int(min(xy.real for xy in path)), int(max(xy.real for xy in path))
+    y_range = int(min(xy.imag for xy in path)), int(max(xy.imag for xy in path))
+    # pp((x_range, y_range))
+
+    tiles = 0
+    for y in range_inclusive(*y_range):
+        inside = False
+        for x in range_inclusive(*x_range):
+            xy = x + y * 1j
+            if xy in path:
+                inside = not inside
+                if inside:
+                    continue
+            if inside:
+                tiles += 1
+                pp(("Inside", xy))
+
+    pp(("part2", tiles))
 
 
 solve1()
+solve2()
