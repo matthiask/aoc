@@ -28,6 +28,7 @@ def parse():
             if c == ".":
                 continue
             if c == "S":
+                pp(("start", xy))
                 start = xy
             grid[xy] = pipes[c]
 
@@ -86,7 +87,7 @@ def solve2():
             if -1 in inside:
                 raise WrongSideError
 
-        pp(path)
+        # pp(path)
         pp(inside)
         pp(("part2", len(inside)))
 
