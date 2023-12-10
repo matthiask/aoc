@@ -67,6 +67,17 @@ class Map:
                 break
         return number
 
+    def map_range2(self, range2):
+        current = range2.min
+        for range in self.ranges:
+            if current < range.src:
+                yield Range2(current, range.src - current)
+                current = range.src
+            if range2.max > current:
+                len = min(range2.len, range.src_max - current)
+                yield Range2(current, len)
+                current += len
+
 
 def parse_maps():
     maps = {}
@@ -76,7 +87,10 @@ def parse_maps():
         maps[src] = Map(
             src=src,
             dst=dst,
-            ranges=[Range(*numbers(line)) for line in lines[1:]],
+            ranges=sorted(
+                (Range(*numbers(line)) for line in lines[1:]),
+                key=lambda range: range.src,
+            ),
         )
 
     return maps
@@ -127,9 +141,7 @@ def solve2():
     while type in maps:
         new_ranges = []
         for range2 in ranges:
-            for r in maps[type].ranges:
-                if r.overlaps(range2):
-                    new_ranges.extend(r.map2(range2))
+            new_ranges.extend(maps[type].map_range2(range2))
         ranges = new_ranges
         pprint((type, ranges))
         type = maps[type].dst
