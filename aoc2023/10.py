@@ -60,26 +60,41 @@ def solve1():
     pp(("part1", len(find_path()) // 2))
 
 
+class WrongSideError(Exception):
+    pass
+
+
 def solve2():
-    path = find_path()
-    side = 1j  # right-hand side (if path is clockwise)
-    inside = {path[i] + (path[i + 1] - path[i]) * side for i in range(len(path) - 1)}
-    path = set(path)
-    inside -= path
+    def _solve(side):
+        path = find_path()
+        inside = {
+            path[i] + (path[i + 1] - path[i]) * side for i in range(len(path) - 1)
+        }
+        path = set(path)
+        inside -= path
 
-    while True:
-        flood = set(inside)
-        for xy in inside:
-            flood |= set(neighbors(xy, diagonal=False))
-        flood -= path
-        # pp((flood, inside))
-        if flood == inside:
-            break
-        inside = flood
+        while True:
+            flood = set(inside)
+            for xy in inside:
+                flood |= set(neighbors(xy, diagonal=False))
+            flood -= path
+            # pp((flood, inside))
+            if flood == inside:
+                break
+            inside = flood
 
-    pp(path)
-    pp(inside)
-    pp(("part2", len(inside)))
+            if -1 in inside:
+                raise WrongSideError
+
+        pp(path)
+        pp(inside)
+        pp(("part2", len(inside)))
+
+    # Right-hand side
+    try:
+        _solve(1j)
+    except WrongSideError:
+        _solve(-1j)
 
 
 solve1()
