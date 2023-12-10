@@ -1,6 +1,6 @@
 from pprint import pp
 
-from tools import open_input, range_inclusive
+from tools import neighbors, open_input
 
 
 N = -1j
@@ -61,26 +61,25 @@ def solve1():
 
 
 def solve2():
-    path = set(find_path())
+    path = find_path()
+    side = 1j  # right-hand side (if path is clockwise)
+    inside = {path[i] + (path[i + 1] - path[i]) * side for i in range(len(path) - 1)}
+    path = set(path)
+    inside -= path
 
-    x_range = int(min(xy.real for xy in path)), int(max(xy.real for xy in path))
-    y_range = int(min(xy.imag for xy in path)), int(max(xy.imag for xy in path))
-    # pp((x_range, y_range))
+    while True:
+        flood = set(inside)
+        for xy in inside:
+            flood |= set(neighbors(xy, diagonal=False))
+        flood -= path
+        # pp((flood, inside))
+        if flood == inside:
+            break
+        inside = flood
 
-    tiles = 0
-    for y in range_inclusive(*y_range):
-        inside = False
-        for x in range_inclusive(*x_range):
-            xy = x + y * 1j
-            if xy in path:
-                inside = not inside
-                if inside:
-                    continue
-            if inside:
-                tiles += 1
-                pp(("Inside", xy))
-
-    pp(("part2", tiles))
+    pp(path)
+    pp(inside)
+    pp(("part2", len(inside)))
 
 
 solve1()
