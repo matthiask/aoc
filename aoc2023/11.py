@@ -8,7 +8,7 @@ def parse():
     return [line.strip() for line in open_input("11")]
 
 
-def expand(universe):
+def expand1(universe):
     x = 0
     while x < len(universe[0]):
         if {line[x] for line in universe} == {"."}:
@@ -38,7 +38,7 @@ def galaxies(universe):
 
 def solve1():
     universe = parse()
-    expand(universe)
+    expand1(universe)
     distances = sum(
         manhattan_distance(a - b) for a, b in combinations(galaxies(universe), 2)
     )
