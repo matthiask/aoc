@@ -45,6 +45,31 @@ def solve1():
     pp(("part1", distances))
 
 
+def expand2(universe, by):
+    distance_x = [1 for _ in universe[0]]
+    distance_y = [1 for _ in universe]
+    for y, line in enumerate(universe):
+        if set(line) == {"."}:
+            distance_y[y] = by
+    for x, _c in enumerate(universe[0]):
+        if {line[x] for line in universe} == {"."}:
+            distance_x[x] = by
+    return distance_x, distance_y
+
+
+def solve2():
+    universe = parse()
+    distance_x, distance_y = expand2(universe, 1000000)
+    galaxies = {
+        sum(distance_x[:x]) + sum(distance_y[:y]) * 1j
+        for x in range(len(universe[0]))
+        for y in range(len(universe))
+        if universe[y][x] == "#"
+    }
+    distances = sum(manhattan_distance(a - b) for a, b in combinations(galaxies, 2))
+    pp(("part2", distances))
+
+
 # print("\n".join(IN))
 # print()
 # expand(IN)
@@ -52,3 +77,4 @@ def solve1():
 # print(galaxies(IN))
 
 solve1()
+solve2()
