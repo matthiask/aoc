@@ -10,28 +10,39 @@ patterns = [
 pp(patterns)
 
 
+# part1
+target_difference = 0
+# part2
+target_difference = 1
+
+
 def vertical(pattern, x):
     return [line[x] for line in pattern]
+
+
+def differences(p1, p2):
+    return sum(0 if a == b else 1 for a, b in zip(p1, p2))
 
 
 summary = 0
 for pattern in patterns:
     for y in range_inclusive(0, len(pattern) - 2):
-        match = True
+        difference_sum = 0
         for dy in range_inclusive(0, min(y, len(pattern) - y - 2)):
-            if pattern[y - dy] != pattern[y + 1 + dy]:
-                match = False
-        if match:
+            difference_sum += differences(pattern[y - dy], pattern[y + 1 + dy])
+        if difference_sum == target_difference:
             summary += 100 * (y + 1)
             pp(y)
 
     for x in range_inclusive(0, len(pattern[0]) - 2):
-        match = True
+        difference_sum = 0
         for dx in range_inclusive(0, min(x, len(pattern[0]) - x - 2)):
-            if vertical(pattern, x - dx) != vertical(pattern, x + 1 + dx):
-                match = False
-        if match:
+            difference_sum += differences(
+                vertical(pattern, x - dx), vertical(pattern, x + 1 + dx)
+            )
+        if difference_sum == target_difference:
             summary += x + 1
             pp(x)
 
-pp(("part1", summary))
+
+pp(("summary", summary))
