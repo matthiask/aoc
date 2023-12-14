@@ -6,7 +6,7 @@ from tools import numbers, open_input
 
 lines = open_input("12").read().strip().split("\n")
 patterns_numbers = [
-    (list(pattern), numbers(num)) for pattern, num in (line.split() for line in lines)
+    (pattern, numbers(num)) for pattern, num in (line.split() for line in lines)
 ]
 
 
@@ -14,21 +14,19 @@ patterns_numbers = [
 
 
 def generate_arrangements(p):
-    if "?" in p:
-        index = p.index("?")
-        yield from generate_arrangements([*p[:index], "#", *p[index + 1 :]])
-        yield from generate_arrangements([*p[:index], ".", *p[index + 1 :]])
+    if (index := p.find("?")) >= 0:
+        yield from generate_arrangements(p[:index] + "#" + p[index + 1 :])
+        yield from generate_arrangements(p[:index] + "." + p[index + 1 :])
     else:
         yield p
 
 
 def check(p, n):
-    lengths = [len(s) for s in re.split(r"\.+", p) if len(s)]
-    # print(p, lengths, n)
+    lengths = [len(s) for s in re.findall(r"#+", p)]
     return lengths == n
 
 
-# pp(["".join(p) for p in generate_arrangements(list("???.###"))])
+# pp(list(generate_arrangements("???.###")))
 
 
 valid = 0
