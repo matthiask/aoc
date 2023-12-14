@@ -31,9 +31,5 @@ def check(p, n):
 
 valid = 0
 for p, n in patterns_numbers:
-    # print(list("".join(a) for a in generate_arrangements(p)))
-    # print(n)
-    valid += sum(
-        1 for arrangement in generate_arrangements(p) if check("".join(arrangement), n)
-    )
+    valid += sum(1 for arrangement in generate_arrangements(p) if check(arrangement, n))
 pp(("part1", valid))
