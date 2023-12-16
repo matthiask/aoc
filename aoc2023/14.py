@@ -10,7 +10,7 @@ H = len(IN)
 
 def parse_dish():
     cubes = {complex(x, y) for y in range(H) for x in range(W) if IN[y][x] == "#"}
-    balls = [complex(x, y) for y in range(H) for x in range(W) if IN[y][x] == "O"]
+    balls = {complex(x, y) for y in range(H) for x in range(W) if IN[y][x] == "O"}
     return cubes, balls
 
 
@@ -31,7 +31,7 @@ def print_dish(cubes, balls):
 
 
 def tilt(cubes, balls, direction, check):
-    new_balls = []
+    new_balls = set()
 
     if direction == -1j:
         balls = sorted(balls, key=lambda ball: ball.imag, reverse=False)
@@ -49,8 +49,8 @@ def tilt(cubes, balls, direction, check):
             and ball + direction not in new_balls
         ):
             ball += direction
-        new_balls.append(ball)
-    return new_balls
+        new_balls.add(ball)
+    return frozenset(new_balls)
 
 
 def load(balls):
@@ -61,7 +61,7 @@ def solve1():
     cubes, balls = parse_dish()
     # pp(balls)
     print_dish(cubes, balls)
-    new_balls = tilt(cubes, balls, -1j, lambda ball: 0 < ball.imag < H - 1)
+    new_balls = tilt(cubes, balls, -1j, lambda ball: ball.imag > 0)
     print()
     print_dish(cubes, new_balls)
     pp(("load", load(new_balls)))
@@ -70,19 +70,31 @@ def solve1():
 def solve2():
     cubes, balls = parse_dish()
 
+    balls_to_cycle = {}
+
     cycles = 1000000000
-    for c in range(cycles):
+    c = 0
+    while c < cycles:
         balls = tilt(cubes, balls, -1j, lambda ball: ball.imag > 0)
         balls = tilt(cubes, balls, -1, lambda ball: ball.real > 0)
         balls = tilt(cubes, balls, 1j, lambda ball: ball.imag < H - 1)
         balls = tilt(cubes, balls, 1, lambda ball: ball.real < W - 1)
 
-        if c % 100000 == 0:
-            print("cycle", c, "completion", c / cycles)
+        if balls in balls_to_cycle:
+            start = balls_to_cycle[balls]
+            end = c
+            c += int((cycles - end) / (end - start)) * (end - start)
+            print(f"Cycle found at {end} (started at {start}), skipping ahead to {c}")
+        else:
+            balls_to_cycle[balls] = c
+
+        # print(balls)
+
+        c += 1
 
     print_dish(cubes, balls)
-    pp("load", load(balls))
+    pp(("load", load(balls)))
 
 
-# solve1()
+solve1()
 solve2()
