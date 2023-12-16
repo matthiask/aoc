@@ -83,7 +83,9 @@ def solve2():
         if balls in balls_to_cycle:
             start = balls_to_cycle[balls]
             end = c
-            c += int((cycles - end) / (end - start)) * (end - start)
+            remaining = cycles - end
+            length = end - start
+            c += int(remaining / length) * length
             print(f"Cycle found at {end} (started at {start}), skipping ahead to {c}")
         else:
             balls_to_cycle[balls] = c
