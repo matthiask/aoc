@@ -1,4 +1,3 @@
-import sys
 from pprint import pp
 
 from tools import open_input
@@ -48,26 +47,18 @@ def print_visited(visited):
 
 def send_beam(beam):
     visited = set()
-    # Heuristic to make it run faster. The longest possible cycle would be W*H
-    # - borders long, but that certainly will not be the case. Divide by some
-    # value to allow the beams to travel through already visited territory for
-    # some time before finishing.
-    max_grace = grace = W * H // 50
     beams = {beam}
 
-    # for _ in range(100):
-    while grace:
+    while True:
         beams = set(travel(beams))
         # pp(beams)
-        if new_visited := {beam[0] for beam in beams} - visited:
+        if new_visited := beams - visited:
             visited |= new_visited
-            grace = max_grace
-        else:
-            grace -= 1
-        sys.stdout.write(f"{grace} ")
-        sys.stdout.flush()
-    print()
-    return visited
+            continue
+        break
+
+    # Only return coordinates without direction
+    return {beam[0] for beam in visited}
 
 
 def solve1():
