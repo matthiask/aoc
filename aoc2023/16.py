@@ -48,7 +48,11 @@ def print_visited(visited):
 
 def send_beam(beam):
     visited = set()
-    max_grace = grace = W * H // 50  # Heuristic
+    # Heuristic to make it run faster. The longest possible cycle would be W*H
+    # - borders long, but that certainly will not be the case. Divide by some
+    # value to allow the beams to travel through already visited territory for
+    # some time before finishing.
+    max_grace = grace = W * H // 50
     beams = {beam}
 
     # for _ in range(100):
