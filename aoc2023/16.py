@@ -1,3 +1,4 @@
+import sys
 from pprint import pp
 
 from tools import open_input
@@ -45,10 +46,10 @@ def print_visited(visited):
     )
 
 
-def solve1():
+def send_beam(beam):
     visited = set()
-    beams = {(-1, 1)}
-    max_grace = grace = W * H // 10
+    max_grace = grace = W * H // 50  # Heuristic
+    beams = {beam}
 
     # for _ in range(100):
     while grace:
@@ -59,11 +60,37 @@ def solve1():
             grace = max_grace
         else:
             grace -= 1
-        print(grace)
+        sys.stdout.write(f"{grace} ")
+        sys.stdout.flush()
+    print()
+    return visited
 
+
+def solve1():
+    visited = send_beam((-1, 1))
     # pp(("visited", visited))
     print_visited(visited)
     pp(("part1", len(visited)))
 
 
+def solve2():
+    max_visited = 0
+    for x in range(W):
+        max_visited = max(
+            max_visited,
+            len(send_beam((x - 1j, 1j))),
+            len(send_beam((x + H * 1j, -1j))),
+        )
+        print({"x": x, "max_visited": max_visited})
+    for y in range(H):
+        max_visited = max(
+            max_visited,
+            len(send_beam((y - 1, 1))),
+            len(send_beam((y + H, -1))),
+        )
+        print({"y": y, "max_visited": max_visited})
+    pp(("part2", max_visited))
+
+
 solve1()
+solve2()
