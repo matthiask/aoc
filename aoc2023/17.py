@@ -1,67 +1,44 @@
-import heapq
-from itertools import pairwise
-from pprint import pp
+from heapq import heappop, heappush
 
-from tools import open_input
+from tools import open_input, range_inclusive
 
 
-IN = open_input("17").read().strip().split("\n")
-W = len(IN[0])
-H = len(IN)
-GRID = {x + y * 1j: int(IN[y][x]) for y in range(H) for x in range(W)}
-start = 0
-end = (W - 1) + (H - 1) * 1j
-pp({"start": start, "end": end})
-# pp(GRID)
+# Not my solution :-(
+G = {
+    x + y * 1j: int(c)
+    for y, r in enumerate(open_input("17"))
+    for x, c in enumerate(r.strip())
+}
 
 
-def _deepen(heat_loss, point, visited):
-    for d in (1, 1j, -1, -1j):
-        pos = point + d
-        if not (0 <= pos.real < W and 0 <= pos.imag < H):
-            # Outside
-            continue
-        if len(visited) > 3 and all(b - a == d for a, b in pairwise(visited[-4:])):
-            # Same direction too long
-            continue
-        if pos in visited:
-            # Already visited
-            continue
-
-        yield (heat_loss + GRID[pos], pos, [*visited, pos])
-
-
-def solve1():
+def f(min, max, end=[*G][-1], x=0):
+    # Tuples:
+    # - heat_loss
+    # - arbitrary counter value
+    # - next position
+    # - direction (1 or 1j)
+    # Two starts, once S, once E
+    todo = [(0, 0, 0, 1), (0, 0, 0, 1j)]
     seen = set()
-    heap = [(0, 0, start, [])]
 
-    while heap:
-        # print("heap", heap)
-        heat_loss, _, point, visited = heapq.heappop(heap)
-        if point == end:
-            pp(("part1", heat_loss))
-            return
+    while todo:
+        val, _, pos, dir = heappop(todo)
 
-        for next in _deepen(heat_loss, point, visited):
-            # print(next, seen)
-            if next[:2] in seen:
-                continue
-            seen.add(next[:2])
-            heapq.heappush(
-                heap,
-                (
-                    next[0],
-                    next[0] * 100000 + next[1].real * 100 + next[1].imag,
-                    next[1],
-                    next[2],
-                ),
-            )
+        if pos == end:
+            # print(val)
+            # continue
+            return val
+        if (pos, dir) in seen:
+            continue
+        seen.add((pos, dir))
 
-        # print(heap)
-        print("heap length", len(heap))
-
-    print("Oops")
-    # pp(("part1", min(heat_loss)))
+        # for d in 1j / dir, -1j / dir:
+        for d in dir * 1j, dir * -1j:
+            for i in range_inclusive(min, max):
+                if (new_pos := pos + d * i) in G:
+                    new_val = val + sum(G[pos + d * j] for j in range_inclusive(1, i))
+                    heappush(todo, (new_val, (x := x + 1), new_pos, d))
 
 
-solve1()
+# print(f(1, 3), f(4, 10))
+print(f(1, 3), f(4, 10))
