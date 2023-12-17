@@ -20,7 +20,7 @@ def _deepen(path):
         if not (0 <= pos.real < W and 0 <= pos.imag < H):
             # Outside
             continue
-        if len(path[2]) > 3 and all(b - a == d for a, b in pairwise(path[-4:])):
+        if len(path[2]) > 3 and all(b - a == d for a, b in pairwise(path[2][-4:])):
             # Same direction too long
             continue
         if pos in path[2]:
