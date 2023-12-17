@@ -1,4 +1,5 @@
-from itertools import chain, pairwise
+import heapq
+from itertools import pairwise
 from pprint import pp
 
 from tools import open_input
@@ -14,41 +15,53 @@ pp({"start": start, "end": end})
 # pp(GRID)
 
 
-def _deepen(path):
+def _deepen(heat_loss, point, visited):
     for d in (1, 1j, -1, -1j):
-        pos = path[0] + d
+        pos = point + d
         if not (0 <= pos.real < W and 0 <= pos.imag < H):
             # Outside
             continue
-        if len(path[2]) > 3 and all(b - a == d for a, b in pairwise(path[-4:])):
+        if len(visited) > 3 and all(b - a == d for a, b in pairwise(visited[-4:])):
             # Same direction too long
             continue
-        if pos in path[2]:
+        if pos in visited:
             # Already visited
             continue
 
-        yield (pos, path[1] + GRID[pos], [*path[2], pos])
+        yield (heat_loss + GRID[pos], pos, [*visited, pos])
 
 
 def solve1():
-    paths = [
-        # (position, heat_loss, visited)
-        (start, 0, []),
-    ]
+    seen = set()
+    heap = [(0, 0, start, [])]
 
-    heat_loss = set()
-    while paths:
-        paths = list(chain.from_iterable(_deepen(path) for path in paths))
+    while heap:
+        # print("heap", heap)
+        heat_loss, _, point, visited = heapq.heappop(heap)
+        if point == end:
+            pp(("part1", heat_loss))
+            return
 
-        end_reached = [path for path in paths if path[0] == end]
-        heat_loss |= {path[1] for path in end_reached}
-        paths = [path for path in paths if path[0] != end]
+        for next in _deepen(heat_loss, point, visited):
+            # print(next, seen)
+            if next[:2] in seen:
+                continue
+            seen.add(next[:2])
+            heapq.heappush(
+                heap,
+                (
+                    next[0],
+                    next[0] * 100000 + next[1].real * 100 + next[1].imag,
+                    next[1],
+                    next[2],
+                ),
+            )
 
-        # print("paths", paths)
-        print("paths", len(paths))
-        print("heat_loss", heat_loss)
+        # print(heap)
+        print("heap length", len(heap))
 
-    pp(("part1", min(heat_loss)))
+    print("Oops")
+    # pp(("part1", min(heat_loss)))
 
 
 solve1()
