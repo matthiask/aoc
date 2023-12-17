@@ -1,3 +1,4 @@
+from collections import defaultdict
 from itertools import chain, pairwise
 from pprint import pp
 
@@ -36,7 +37,7 @@ def _deepen(path):
 def solve1():
     paths = [
         # (position, heat_loss, visited)
-        (start, 0, []),
+        (start, 0, [0]),
     ]
 
     heat_loss = 99999999999
@@ -44,14 +45,12 @@ def solve1():
         paths = list(chain.from_iterable(_deepen(path) for path in paths))
 
         # Prune search space. Find the cheapest path for each current position
-        paths = {
-            path[0]: path
-            for path in sorted(
-                paths,
-                key=lambda path: path[1],
-                reverse=True,
-            )
-        }.values()
+        positions = defaultdict(list)
+        for path in sorted(paths, key=lambda path: path[1]):
+            positions[path[0]].append(path)
+
+        # Keep a few of the cheapest paths per position
+        paths = list(chain.from_iterable(p[:3] for p in positions.values()))
 
         end_reached = [path for path in paths if path[0] == end]
         if end_reached:
