@@ -50,7 +50,7 @@ def solve1():
             positions[path[0]].append(path)
 
         # Keep a few of the cheapest paths per position
-        paths = list(chain.from_iterable(p[:3] for p in positions.values()))
+        paths = list(chain.from_iterable(p[:2] for p in positions.values()))
 
         end_reached = [path for path in paths if path[0] == end]
         if end_reached:
