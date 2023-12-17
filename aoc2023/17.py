@@ -12,6 +12,7 @@ start = 0
 end = (W - 1) + (H - 1) * 1j
 pp({"start": start, "end": end})
 # pp(GRID)
+max_same = 3
 
 
 def _deepen(path):
@@ -20,7 +21,9 @@ def _deepen(path):
         if not (0 <= pos.real < W and 0 <= pos.imag < H):
             # Outside
             continue
-        if len(path[2]) > 3 and all(b - a == d for a, b in pairwise(path[2][-4:])):
+        if len(path[2]) > max_same and all(
+            b - a == d for a, b in pairwise(path[2][-1 - max_same :])
+        ):
             # Same direction too long
             continue
         if pos in path[2]:
@@ -36,19 +39,34 @@ def solve1():
         (start, 0, []),
     ]
 
-    heat_loss = set()
+    heat_loss = 99999999999
     while paths:
         paths = list(chain.from_iterable(_deepen(path) for path in paths))
 
+        # Prune search space. Find the cheapest path for each current position
+        paths = {
+            path[0]: path
+            for path in sorted(
+                paths,
+                key=lambda path: path[1],
+                reverse=True,
+            )
+        }.values()
+
         end_reached = [path for path in paths if path[0] == end]
-        heat_loss |= {path[1] for path in end_reached}
+        if end_reached:
+            min_path = sorted(end_reached, key=lambda path: path[1])[0]
+            if min_path[1] < heat_loss:
+                print("min_path", min_path)
+                heat_loss = min_path[1]
         paths = [path for path in paths if path[0] != end]
 
         # print("paths", paths)
         print("paths", len(paths))
-        print("heat_loss", heat_loss)
+        # pp(paths)
+        # print("heat_loss", heat_loss)
 
-    pp(("part1", min(heat_loss)))
+    pp(("part1", heat_loss))
 
 
 solve1()
