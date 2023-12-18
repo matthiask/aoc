@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from itertools import chain
 from pprint import pp
 
 from tools import neighbors, open_input
@@ -46,21 +45,25 @@ print("Dug out", len(G))
 print("Extent", X, Y)
 
 flood = {complex(X[0], Y[0])}
+frontier = set(flood)
 while True:
-    next_flood = flood | set(
-        chain.from_iterable(
-            (
+    next_frontier = set()
+    for pos in frontier:
+        if (
+            new_positions := {
                 next_pos
                 for next_pos in neighbors(pos, diagonal=True)
                 if next_pos not in G
                 and X[0] <= next_pos.real <= X[1]
                 and Y[0] <= next_pos.imag <= Y[1]
-            )
-            for pos in flood
-        )
-    )
-    if next_flood == flood:
+            }
+            - flood
+        ):
+            flood |= new_positions
+            next_frontier |= new_positions
+    if not next_frontier:
         break
-    flood = next_flood
+    flood |= next_frontier
+    frontier = next_frontier
 
 print("Extent", (X[1] - X[0] + 1) * (Y[1] - Y[0] + 1) - len(flood))
