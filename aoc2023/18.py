@@ -76,8 +76,11 @@ def solve1():
     print("Extent", (xr[1] - xr[0] + 1) * (yr[1] - yr[0] + 1) - len(flood))
 
 
-# def solve2():
-#     dig = list(map(Step.from_2, open_input("18").read().strip().split("\n")))
+def solve2():
+    dig = list(map(Step.from_2, open_input("18").read().strip().split("\n")))
+    pp(dig)
+
+
 #     pos = 0
 #     border = {pos}
 #     for step in dig:
@@ -90,4 +93,4 @@ def solve1():
 
 
 solve1()
-# solve2()
+solve2()
