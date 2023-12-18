@@ -45,6 +45,9 @@ print("Dug out", len(G))
 print("Extent", X, Y)
 
 flood = {complex(X[0], Y[0])}
+# Frontier only contains those positions which were found by the last flood
+# fill step; all other positions cannot possibly find additional positions
+# (we'd only be rechecking the same positions over and over).
 frontier = set(flood)
 while True:
     next_frontier = set()
