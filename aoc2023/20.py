@@ -1,7 +1,11 @@
+import sys
 from dataclasses import dataclass, field
 from pprint import pp
 
 from tools import open_input
+
+
+sys.setrecursionlimit(20000)
 
 
 LOW = False
@@ -15,13 +19,17 @@ class FlipFlop:
     destinations: list[str]
     type: bool = LOW
 
-    def process(self, modules, module, pulse):
+    def receive(self, modules, module, pulse):
         if pulse is HIGH:
             return
         self.type = not self.type
+
+    def broadcast(self):
         for destination in self.destinations:
             counters[self.type] += 1
-            modules[destination].process(modules, self.name, self.type)
+            modules[destination].receive(modules, self.name, self.type)
+        for destination in self.destinations:
+            modules[destination].broadcast()
 
 
 @dataclass
@@ -30,28 +38,41 @@ class Conjunction:
     destinations: list[str]
     received: dict[str, bool] = field(default_factory=dict)
 
-    def process(self, modules, module, pulse):
+    def receive(self, modules, module, pulse):
         self.received[module] = pulse
+
+    def broadcast(self):
         type = LOW if all(self.received.values()) else HIGH
         for destination in self.destinations:
             counters[type] += 1
-            modules[destination].process(modules, self.name, type)
+            modules[destination].receive(modules, self.name, type)
+        for destination in self.destinations:
+            modules[destination].broadcast()
 
 
 @dataclass
 class Broadcaster:
     name: str
     destinations: list[str]
+    pulse: bool = False
 
-    def process(self, modules, module, pulse):
+    def receive(self, modules, module, pulse):
+        self.pulse = pulse
+
+    def broadcast(self):
         for destination in self.destinations:
-            counters[pulse] += 1
-            modules[destination].process(modules, self.name, pulse)
+            counters[self.pulse] += 1
+            modules[destination].receive(modules, self.name, self.pulse)
+        for destination in self.destinations:
+            modules[destination].broadcast()
 
 
 @dataclass
 class Output:
-    def process(self, modules, module, pulse):
+    def receive(self, modules, module, pulse):
+        pass
+
+    def broadcast(self):
         pass
 
 
@@ -79,5 +100,6 @@ pp(modules)
 
 for _ in range(1000):
     counters[LOW] += 1
-    modules["broadcaster"].process(modules, "broadcaster", LOW)
+    modules["broadcaster"].receive(modules, "broadcaster", LOW)
+    modules["broadcaster"].broadcast()
 print(counters)
