@@ -20,11 +20,11 @@ class FlipFlop:
     type: bool = LOW
 
     def receive(self, modules, module, pulse):
-        if pulse is HIGH:
-            return
-        self.type = not self.type
+        self.type = not pulse
 
     def broadcast(self):
+        if self.type is LOW:
+            return
         for destination in self.destinations:
             counters[self.type] += 1
             modules[destination].receive(modules, self.name, self.type)
