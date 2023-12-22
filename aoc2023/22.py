@@ -1,8 +1,12 @@
-from dataclasses import dataclass
-from itertools import count
+from dataclasses import dataclass, field
+from itertools import count, cycle
 from pprint import pp
+from string import ascii_uppercase
 
 from tools import numbers, open_input
+
+
+ascii_uppercase_iter = cycle(ascii_uppercase)
 
 
 def overlaps(start1, end1, start2, end2):
@@ -17,6 +21,7 @@ class Brick:
     x2: int
     y2: int
     z2: int
+    s: str = field(default_factory=lambda: next(ascii_uppercase_iter))
 
     def vertical(self, dz):
         return Brick(
@@ -26,6 +31,7 @@ class Brick:
             self.x2,
             self.y2,
             self.z2 + dz,
+            self.s,
         )
 
     def intersects(self, other):
@@ -37,7 +43,7 @@ class Brick:
 
 
 bricks = [Brick(*numbers(line)) for line in open_input("22")]
-floor = Brick(0, 0, 0, 9999, 9999, 0)
+floor = Brick(-99999, -99999, 0, 99999, 99999, 0)
 pp(bricks)
 # pp(floor)
 
@@ -55,23 +61,24 @@ def solve1():
                 settled.append(brick.vertical(dz))
                 break
 
-    pp(settled)
-    would_be_safe_to_disintegrate = 0
+    # pp(settled)
+
+    print("Checking which bricks would be safe to disintegrate...")
+    safe = set()
     for maybe_disintegrate in settled[1:]:
         up = maybe_disintegrate.vertical(1)
         # Find bricks which are supported by the brick we're looking at currently
-        supported = [s for s in settled if s != maybe_disintegrate and s.intersects(up)]
-        for b in supported:
-            below = b.vertical(-1)
-            if not any(
-                s.intersects(below)
-                for s in settled
-                if s != maybe_disintegrate and s != b
-            ):
-                break
+        if supported := [
+            s for s in settled if s != maybe_disintegrate and s.intersects(up)
+        ]:
+            for b in supported:
+                below = b.vertical(-1)
+                if len({s for s in settled if s != b and s.intersects(below)}) >= 2:
+                    safe.add(maybe_disintegrate)
         else:
-            would_be_safe_to_disintegrate += 1
-    print(would_be_safe_to_disintegrate)
+            safe.add(maybe_disintegrate)
+    pp(sorted(brick.s for brick in safe))
+    print(len(safe))
 
 
 solve1()
