@@ -65,18 +65,25 @@ def solve1():
 
     print("Checking which bricks would be safe to disintegrate...")
     safe = set()
-    for maybe_disintegrate in settled[1:]:
+    for maybe_disintegrate in settled:
+        # Go up one step ...
         up = maybe_disintegrate.vertical(1)
-        # Find bricks which are supported by the brick we're looking at currently
-        if supported := [
-            s for s in settled if s != maybe_disintegrate and s.intersects(up)
-        ]:
-            for b in supported:
-                below = b.vertical(-1)
-                if len({s for s in settled if s != b and s.intersects(below)}) >= 2:
-                    safe.add(maybe_disintegrate)
-        else:
+        # ... and find bricks which are supported by the brick we're looking at
+        supported = [s for s in settled if s != maybe_disintegrate and s.intersects(up)]
+        print(up, len(supported))
+        if not supported:
+            # No bricks directly above, we found one which would be safe to disintegrate
             safe.add(maybe_disintegrate)
+        else:
+            # Determine if there's another brick supporting a supported brick
+            for sup in supported:
+                down = sup.vertical(-1)
+                if any(
+                    s.intersects(down)
+                    for s in settled
+                    if s != maybe_disintegrate and s != sup
+                ):
+                    safe.add(maybe_disintegrate)
     pp(sorted(brick.s for brick in safe))
     print(len(safe))
 
