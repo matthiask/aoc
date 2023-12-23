@@ -14,9 +14,9 @@ S = next(xy for xy, c in G.items() if c == "S")
 # pp(S)
 
 
-def solve1():
+def solve1(r):
     places = {S}
-    for _ in range(64):
+    for _ in range(r):
         places = set(
             chain.from_iterable(
                 (
@@ -30,4 +30,7 @@ def solve1():
     pp(("part1", len(places)))
 
 
-solve1()
+solve1(64)
+solve1(65)
+solve1(65 + 131)
+solve1(65 + 131 * 2)
