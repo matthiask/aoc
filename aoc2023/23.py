@@ -25,7 +25,8 @@ while paths:
             ):
                 if next_xy == end:
                     final.append([*path, next_xy])
-                elif c == slope or c == ".":
+                # elif c == slope or c == ".":
+                elif c != "#":
                     next_paths.append([*path, next_xy])
     paths = next_paths
 
