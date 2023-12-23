@@ -78,7 +78,18 @@ def solve1():
 
 def solve2():
     dig = list(map(Step.from_2, open_input("18").read().strip().split("\n")))
-    pp(dig)
+
+    prev = 0
+    area = 0
+    for p in dig:
+        curr = prev + p.dir * p.dist
+        # Shoelace formula plus half of the "border" (p.dist)
+        area += (prev.real * curr.imag - prev.imag * curr.real) + p.dist
+        prev = curr
+
+    # pp(dig)
+
+    print("Area", area // 2 + 1)
 
 
 #     pos = 0
