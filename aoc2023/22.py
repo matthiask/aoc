@@ -1,91 +1,47 @@
-from dataclasses import dataclass, field
-from itertools import count, cycle
-from pprint import pp
-from string import ascii_uppercase
+# Not mine :-(
+
+from collections import defaultdict
 
 from tools import numbers, open_input
 
 
-ascii_uppercase_iter = cycle(ascii_uppercase)
+def dropped_brick(tallest, brick):
+    peak = max(
+        tallest[(x, y)]
+        for x in range(brick[0], brick[3] + 1)
+        for y in range(brick[1], brick[4] + 1)
+    )
+    dz = max(brick[2] - peak - 1, 0)
+    return (brick[0], brick[1], brick[2] - dz, brick[3], brick[4], brick[5] - dz)
 
 
-def overlaps(start1, end1, start2, end2):
-    return end1 >= start2 and end2 >= start1
+def drop(tower):
+    tallest = defaultdict(int)
+    new_tower = []
+    falls = 0
+    for brick in tower:
+        new_brick = dropped_brick(tallest, brick)
+        if new_brick[2] != brick[2]:
+            falls += 1
+        new_tower.append(new_brick)
+        for x in range(brick[0], brick[3] + 1):
+            for y in range(brick[1], brick[4] + 1):
+                tallest[(x, y)] = new_brick[5]
+    return falls, new_tower
 
 
-@dataclass(frozen=True, slots=True)
-class Brick:
-    x1: int
-    y1: int
-    z1: int
-    x2: int
-    y2: int
-    z2: int
-    s: str = field(default_factory=lambda: next(ascii_uppercase_iter))
-
-    def vertical(self, dz):
-        return Brick(
-            self.x1,
-            self.y1,
-            self.z1 + dz,
-            self.x2,
-            self.y2,
-            self.z2 + dz,
-            self.s,
-        )
-
-    def intersects(self, other):
-        return (
-            overlaps(self.x1, self.x2, other.x1, other.x2)
-            and overlaps(self.y1, self.y2, other.y1, other.y2)
-            and overlaps(self.z1, self.z2, other.z1, other.z2)
-        )
-
-
-bricks = [Brick(*numbers(line)) for line in open_input("22")]
-floor = Brick(-99999, -99999, 0, 99999, 99999, 0)
-pp(bricks)
-# pp(floor)
-
-
-def solve1():
-    settled = [
-        floor,
-    ]
-    print("Settling...")
-    for brick in bricks:
-        for dz in count(0, -1):
-            # print(f"Trying to move {brick} down {dz - 1}")
-            next = brick.vertical(dz - 1)
-            if any(s.intersects(next) for s in settled):
-                settled.append(brick.vertical(dz))
-                break
-
-    # pp(settled)
-
-    print("Checking which bricks would be safe to disintegrate...")
-    safe = set()
-    for maybe_disintegrate in settled:
-        # Go up one step ...
-        up = maybe_disintegrate.vertical(1)
-        # ... and find bricks which are supported by the brick we're looking at
-        supported = [s for s in settled if s != maybe_disintegrate and s.intersects(up)]
-        print(up, len(supported))
-        if not supported:
-            # No bricks directly above, we found one which would be safe to disintegrate
-            safe.add(maybe_disintegrate)
+def solve(data):
+    bricks = sorted([numbers(line) for line in data], key=lambda brick: brick[2])
+    _, fallen = drop(bricks)
+    p1 = p2 = 0
+    for i in range(len(fallen)):
+        removed = fallen[:i] + fallen[i + 1 :]
+        falls, _ = drop(removed)
+        if not falls:
+            p1 += 1
         else:
-            # Determine if there's another brick supporting a supported brick
-            for sup in supported:
-                down = sup.vertical(-1)
-                if any(
-                    s.intersects(down)
-                    for s in settled
-                    if s != maybe_disintegrate and s != sup
-                ):
-                    safe.add(maybe_disintegrate)
-    pp(sorted(brick.s for brick in safe))
-    print(len(safe))
+            p2 += falls
+    return p1, p2
 
 
-solve1()
+print(solve([*open_input("22")]))
