@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from itertools import combinations
 
-from tools import numbers, open_input
+from tools import numbers
 
 
 def almost_equal(f1, f2):
@@ -34,7 +34,8 @@ class Hailstone:
 
 
 def solve1(inp, min, max):
-    stones = [Hailstone.from_line(line) for line in open_input(inp)]
+    with open(inp) as f:
+        stones = [Hailstone.from_line(line) for line in f]
     intersections = 0
     for h1, h2 in combinations(stones, 2):
         # p1 + t * v1 = p2 + t * v2
@@ -54,5 +55,5 @@ def solve1(inp, min, max):
     print(intersections)
 
 
-solve1("24-test", 7, 27)
-solve1("24", 200000000000000, 400000000000000)
+solve1("24-test.txt", 7, 27)
+solve1("24.txt", 200000000000000, 400000000000000)
