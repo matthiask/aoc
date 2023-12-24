@@ -50,7 +50,7 @@ def solve1(inp, min, max):
         if t > 0:
             at = h1.at(t)
             if min <= at.x <= max and min <= at.y <= max:
-                print(t, at)
+                # print(t, at)
                 intersections += 1
     print(intersections)
 
