@@ -4,8 +4,8 @@ with open("11.txt") as f:
     }
 
 
-max_x = max(x for x, y in INITIAL.keys()) + 1
-max_y = max(y for x, y in INITIAL.keys()) + 1
+max_x = max(x for x, y in INITIAL) + 1
+max_y = max(y for x, y in INITIAL) + 1
 
 all_points = [(x, y) for x in range(max_x) for y in range(max_y)]
 

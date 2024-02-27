@@ -15,9 +15,7 @@ def parse(lines):
             cwd = cwd[:-1]
         elif line.startswith("$ cd "):
             cwd.append(line[5:])
-        elif line.startswith("$ ls"):
-            pass
-        elif line.startswith("dir "):
+        elif line.startswith("$ ls") or line.startswith("dir "):
             pass
         elif match := re.match(r"^([0-9]+) (.*)$", line):
             fsize = int(match.groups()[0])
