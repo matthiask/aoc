@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 
 const input = readFileSync("07.txt", { encoding: "utf-8" })
 const test = `\
@@ -21,7 +21,7 @@ const parse = (input) =>
       const matches = rule.match(/^(.+) bags contain (.*)$/, rule)
       const color = matches[1]
       const contains =
-        matches[2] == "no other bags."
+        matches[2] === "no other bags."
           ? []
           : matches[2].split(", ").map((bag) => {
               const matches = bag.match(/(\d+) (.+) bag/)
@@ -47,8 +47,8 @@ const parse = (input) =>
 const part1 = (rules) => {
   const reverse = new Map()
 
-  for (let rule of rules) {
-    for (let contains of rule.contains) {
+  for (const rule of rules) {
+    for (const contains of rule.contains) {
       const list = [...(reverse.get(contains.color) || []), rule]
       reverse.set(contains.color, list)
     }
@@ -58,7 +58,7 @@ const part1 = (rules) => {
 
   const colors = new Set()
   const _recurse = (color) => {
-    for (let r of reverse.get(color) || []) {
+    for (const r of reverse.get(color) || []) {
       colors.add(r.color)
       _recurse(r.color)
     }

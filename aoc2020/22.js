@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("22.txt", { encoding: "utf-8" })
 
 const test = `\

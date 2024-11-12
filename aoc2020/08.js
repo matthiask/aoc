@@ -1,6 +1,6 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("08.txt", { encoding: "utf-8" })
-const test = `\
+const _test = `\
 nop +0
 acc +1
 jmp +4
@@ -22,9 +22,9 @@ const parse = (input) =>
     })
 
 const execute = (program) => {
-  let ip = 0,
-    acc = 0,
-    lastIp = 0
+  let ip = 0
+  let acc = 0
+  let lastIp = 0
 
   const ipCounter = Object.fromEntries(program.map((_, idx) => [idx, 0]))
 
@@ -64,9 +64,9 @@ const program = parse(input)
 for (let i = 0; i < program.length; ++i) {
   const modified = parse(input)
 
-  if (program[i][0] == "jmp") {
+  if (program[i][0] === "jmp") {
     modified[i][0] = "nop"
-  } else if (program[i][0] == "nop") {
+  } else if (program[i][0] === "nop") {
     modified[i][0] = "jmp"
   } else {
     continue
@@ -75,7 +75,7 @@ for (let i = 0; i < program.length; ++i) {
   try {
     const acc = execute(modified)
     console.log("part2", acc, program[i], modified[i])
-  } catch (e) {
+  } catch (_e) {
     /* nothing */
   }
 }

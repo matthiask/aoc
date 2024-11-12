@@ -40,8 +40,8 @@ const cartesian = (...a) =>
 const cartesian = (head, ...tail) => {
   const next = tail.length ? cartesian(...tail) : [[]]
   const results = []
-  for (let h of head) {
-    for (let n of next) {
+  for (const h of head) {
+    for (const n of next) {
       results.push([h, ...n])
     }
   }
@@ -113,7 +113,7 @@ const cycle = (points) => {
   const allPoints = cartesian(...allRanges).map((point) => key(point))
   // console.debug(allPoints)
 
-  for (let point of allPoints) {
+  for (const point of allPoints) {
     const activeNeighbors = neighbors(point).filter((p) => points.has(p)).length
     if (points.has(point)) {
       // Active

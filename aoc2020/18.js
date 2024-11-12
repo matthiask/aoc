@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("18.txt", { encoding: "utf-8" })
 
 const regexp = /([0-9]*|[()+*]*|\s*)/g
@@ -48,7 +48,7 @@ const evaluate = (tokens) => {
 }
 
 const evaluateSumThenMul = (tokens) => {
-  let factors = [null]
+  const factors = [null]
   let operator = null
   while (tokens.length) {
     const token = tokens.shift()
@@ -84,8 +84,8 @@ const tests = [
 ]
 
 const runTests = () => {
-  for (let [calculation, expected] of tests) {
-    let calculated = evaluate(tokenize(calculation))
+  for (const [calculation, expected] of tests) {
+    const calculated = evaluate(tokenize(calculation))
     console.debug(calculated, expected, calculated === expected)
     console.debug(evaluateSumThenMul(tokenize(calculation)))
   }

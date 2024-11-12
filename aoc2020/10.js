@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("10.txt", { encoding: "utf-8" })
 const test1 = `\
 16
@@ -53,8 +53,8 @@ const parse = (input) => input.split("\n").filter(Boolean).map(Number)
 const maxJoltage = (joltages) => Math.max(...joltages) + 3
 
 const joltageDifferences = (joltages) => {
-  const differences = [],
-    values = [...joltages, 0, maxJoltage(joltages)].sort((a, b) => a - b)
+  const differences = []
+  const values = [...joltages, 0, maxJoltage(joltages)].sort((a, b) => a - b)
   for (let i = 1, len = values.length; i < len; ++i) {
     differences.push(values[i] - values[i - 1])
   }
@@ -63,7 +63,7 @@ const joltageDifferences = (joltages) => {
 
 const countDifferences = (joltages) => {
   const differences = new Map()
-  for (let diff of joltageDifferences(joltages)) {
+  for (const diff of joltageDifferences(joltages)) {
     differences.set(diff, (differences.get(diff) || 0) + 1)
   }
   return differences
@@ -84,7 +84,7 @@ const findRunsOfOnes = (joltages) => {
 
   const _eatRun = () => {
     let length = 0
-    while (differences[i] == 1) {
+    while (differences[i] === 1) {
       ++i
       ++length
     }
@@ -92,12 +92,12 @@ const findRunsOfOnes = (joltages) => {
   }
 
   const _eatNoOnes = () => {
-    while (differences[i] != 1 && i < differences.length) {
+    while (differences[i] !== 1 && i < differences.length) {
       ++i
     }
   }
 
-  for (; i < differences.length; ) {
+  while (i < differences.length) {
     _eatRun()
     _eatNoOnes()
   }

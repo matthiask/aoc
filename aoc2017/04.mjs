@@ -1,11 +1,11 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("04.txt", { encoding: "utf-8" })
   .split("\n")
   .filter(Boolean)
 
 const isValidPart1 = (line) => {
-  let seen = new Set()
-  for (let word of line.split(" ")) {
+  const seen = new Set()
+  for (const word of line.split(" ")) {
     if (seen.has(word)) return false
     seen.add(word)
   }

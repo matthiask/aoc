@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("14.txt", { encoding: "utf-8" })
 
 const test = `\
@@ -16,7 +16,7 @@ mem[26] = 1
 `
 
 const dec2bin = (number) => (Number(number) >>> 0).toString(2).padStart(36, "0")
-const bin2dec = (number) => parseInt(number, 2)
+const bin2dec = (number) => Number.parseInt(number, 2)
 
 const applyMask = (mask, number) => {
   const bin = Array.from(mask)
@@ -33,7 +33,7 @@ const parse = (input) => {
     .filter(Boolean)
     .forEach((line) => {
       const [left, right] = line.split(" = ")
-      if (left == "mask") {
+      if (left === "mask") {
         program.push(["msk", 0, right])
       } else if (left.startsWith("mem[")) {
         program.push([
@@ -54,8 +54,8 @@ const part1 = (input) => {
 
   let mask = ""
 
-  for (let [inst, op1, op2] of program) {
-    if (inst == "msk") {
+  for (const [inst, op1, op2] of program) {
+    if (inst === "msk") {
       mask = op2
     } else {
       memory.set(op1, applyMask(mask, op2))
@@ -69,7 +69,7 @@ const part1 = (input) => {
 const allAddresses = (mask, number) => {
   number = dec2bin(number)
   const floating = []
-  let num = Array.from(mask).map((m, idx) => {
+  const num = Array.from(mask).map((m, idx) => {
     if (m === "X") {
       floating.push(idx)
     } else if (m === "0") {
@@ -100,11 +100,11 @@ const part2 = (input) => {
 
   let mask = ""
 
-  for (let [inst, op1, op2] of program) {
-    if (inst == "msk") {
+  for (const [inst, op1, op2] of program) {
+    if (inst === "msk") {
       mask = op2
     } else {
-      for (let address of allAddresses(mask, op1)) {
+      for (const address of allAddresses(mask, op1)) {
         memory.set(address, bin2dec(op2))
       }
     }

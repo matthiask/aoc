@@ -202,8 +202,8 @@ const input = `\
 1927
 1525`
 
-const numbers = input.split("\n").map(Number),
-  len = numbers.length
+const numbers = input.split("\n").map(Number)
+const len = numbers.length
 
 function part1() {
   for (let i = 0; i < len; ++i) {

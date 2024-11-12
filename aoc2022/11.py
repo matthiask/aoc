@@ -1,7 +1,8 @@
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from pprint import pprint
-from typing import Any, Callable
+from typing import Any
 
 
 @dataclass

@@ -762,11 +762,11 @@ FBBFBFBRRL
 FBFFFFFRRL`
 
 const seats = input.split("\n").map((seat) => {
-  const row = parseInt(
+  const row = Number.parseInt(
     seat.substring(0, 7).replace(/F/g, "0").replace(/B/g, "1"),
     2,
   )
-  const col = parseInt(
+  const col = Number.parseInt(
     seat.substring(7, 10).replace(/L/g, "0").replace(/R/g, "1"),
     2,
   )
@@ -777,7 +777,7 @@ const occupied = seats.map(({ seatId }) => seatId)
 
 console.log("part1", Math.max(...occupied))
 
-for (let id of occupied) {
+for (const id of occupied) {
   if (!occupied.includes(id + 1) && occupied.includes(id + 2)) {
     console.log("part2", id + 1)
   }

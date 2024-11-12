@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("11.txt", { encoding: "utf-8" })
 
 const test = `\
@@ -29,10 +29,16 @@ const adjacentOccupiedCount = (grid, x, y) => {
     for (let dx = -1; dx <= 1; ++dx) {
       if (dx === 0 && dy === 0) continue
 
-      let ax = x + dx
-      let ay = y + dy
+      const ax = x + dx
+      const ay = y + dy
 
-      if (ax >= 0 && ax < xMax && ay >= 0 && ay < yMax && grid[ay][ax] == "#") {
+      if (
+        ax >= 0 &&
+        ax < xMax &&
+        ay >= 0 &&
+        ay < yMax &&
+        grid[ay][ax] === "#"
+      ) {
         ++count
       }
     }
@@ -58,17 +64,17 @@ const occupiedSeatsIn8DirectionsOver = (grid, x, y, over) => {
 
   const char = (x, y) => (grid[y] ? grid[y][x] : ".")
 
-  let seatSeen = [false, false, false, false, false, false, false, false]
+  const seatSeen = [false, false, false, false, false, false, false, false]
   let count = 0
   for (let i = 1; i <= max; ++i) {
     offsets(i).forEach(([dx, dy], idx) => {
       if (seatSeen[idx]) return
-      const ax = x + dx,
-        ay = y + dy,
-        c = char(ax, ay)
-      if (c == ".") return
+      const ax = x + dx
+      const ay = y + dy
+      const c = char(ax, ay)
+      if (c === ".") return
       seatSeen[idx] = true
-      count += c == "#" ? 1 : 0
+      count += c === "#" ? 1 : 0
     })
     if (count > over) return true
   }
@@ -80,13 +86,15 @@ const round = (grid) => {
   const newGrid = grid.map((row, y) =>
     row.map((character, x) => {
       // console.debug({ x, y, character, occupied: adjacentOccupiedCount(grid, x, y) })
-      if (character == ".") {
+      if (character === ".") {
         return character
-      } else if (character == "L") {
-        return adjacentOccupiedCount(grid, x, y) == 0 && (changed = true)
+      }
+      if (character === "L") {
+        return adjacentOccupiedCount(grid, x, y) === 0 && (changed = true)
           ? "#"
           : "L"
-      } else if (character == "#") {
+      }
+      if (character === "#") {
         return adjacentOccupiedCount(grid, x, y) >= 4 && (changed = true)
           ? "L"
           : "#"
@@ -98,9 +106,9 @@ const round = (grid) => {
 
 const occupiedSeats = (grid) => {
   let occupied = 0
-  for (let row of grid) {
-    for (let cell of row) {
-      if (cell == "#") ++occupied
+  for (const row of grid) {
+    for (const cell of row) {
+      if (cell === "#") ++occupied
     }
   }
   return occupied
@@ -110,7 +118,7 @@ const printify = (grid) => grid.map((row) => row.join("")).join("\n")
 
 const part1 = (grid) => {
   for (;;) {
-    let newGrid = round(grid)
+    const newGrid = round(grid)
     if (newGrid === grid) {
       console.debug(printify(grid))
       return occupiedSeats(grid)
@@ -124,16 +132,17 @@ const round2 = (grid) => {
   const newGrid = grid.map((row, y) =>
     row.map((character, x) => {
       // console.debug({ x, y, character, occupied: adjacentOccupiedCount(grid, x, y) })
-      if (character == ".") {
+      if (character === ".") {
         return character
-      } else if (character == "L") {
+      }
+      if (character === "L") {
         if (occupiedSeatsIn8DirectionsOver(grid, x, y, 0)) {
           return "L"
-        } else {
-          changed = true
-          return "#"
         }
-      } else if (character == "#") {
+        changed = true
+        return "#"
+      }
+      if (character === "#") {
         return occupiedSeatsIn8DirectionsOver(grid, x, y, 4) && (changed = true)
           ? "L"
           : "#"
@@ -145,7 +154,7 @@ const round2 = (grid) => {
 
 const part2 = (grid) => {
   for (;;) {
-    let newGrid = round2(grid)
+    const newGrid = round2(grid)
     if (newGrid === grid) {
       console.debug(printify(grid))
       return occupiedSeats(grid)

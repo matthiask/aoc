@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("16.txt", { encoding: "utf-8" })
 
 const test = `\
@@ -101,11 +101,11 @@ const part2 = (input) => {
   let foundAnother = true
   while (foundAnother) {
     foundAnother = false
-    for (let [idx, names] of possible.entries()) {
+    for (const [idx, names] of possible.entries()) {
       if (names.size === 1) {
         const name = Array.from(names)[0]
         fieldsToIndex.set(name, idx)
-        for (let names of possible.values()) {
+        for (const names of possible.values()) {
           names.delete(name)
         }
         foundAnother = true

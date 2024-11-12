@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("21.txt", { encoding: "utf-8" })
 
 const test = `\
@@ -44,8 +44,8 @@ const part1 = (log, input) => {
   const puzzle = parse(input)
 
   const knowledge = new Map()
-  for (let food of puzzle.foods) {
-    for (let allergen of food.allergens) {
+  for (const food of puzzle.foods) {
+    for (const allergen of food.allergens) {
       if (knowledge.has(allergen)) {
         knowledge.set(
           allergen,
@@ -60,9 +60,9 @@ const part1 = (log, input) => {
   // console.debug(knowledge)
 
   const maybeAllergenIngredients = new Set(
-    Array.from(knowledge.values())
-      .map((ingredients) => Array.from(ingredients))
-      .flat(),
+    Array.from(knowledge.values()).flatMap((ingredients) =>
+      Array.from(ingredients),
+    ),
   )
   const noAllergenIngredients = difference(
     puzzle.ingredients,
@@ -80,17 +80,14 @@ const part1 = (log, input) => {
 
   const identified = new Map()
   while (knowledge.size) {
-    for (let [allergen, ingredients] of knowledge.entries()) {
+    for (const [allergen, ingredients] of knowledge.entries()) {
       if (ingredients.size === 1) {
         const ingredient = Array.from(ingredients)[0]
         identified.set(allergen, ingredient)
         knowledge.delete(allergen)
-        for (let ingredients of knowledge.values()) {
+        for (const ingredients of knowledge.values()) {
           ingredients.delete(ingredient)
         }
-
-        // console.debug(knowledge)
-        continue
       }
     }
   }

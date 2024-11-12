@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("19.txt", { encoding: "utf-8" })
 
 const test = `
@@ -16,12 +16,12 @@ aaabbb
 aaaabbb
 `
 
-const parseSpec = (rules, spec) => {
+const parseSpec = (_rules, spec) => {
   // console.debug({ spec })
   const string = spec.match(/"(.)"/)
   if (string) {
     const char = string[1]
-    return (rules, messageChars, index) => {
+    return (_rules, messageChars, index) => {
       // console.debug({ string, messageChars })
       if (messageChars[index] === char) {
         return index + 1
@@ -35,11 +35,11 @@ const parseSpec = (rules, spec) => {
     .map((variant) => variant.trim().split(" ").filter(Boolean).map(Number))
   // console.debug({ variants })
   return (rules, messageChars, index) => {
-    for (let variant of variants) {
-      let now = index,
-        next,
-        matches = true
-      for (let number of variant) {
+    for (const variant of variants) {
+      let now = index
+      let next
+      let matches = true
+      for (const number of variant) {
         next = rules.get(number)(rules, messageChars, now)
         if (next > now) {
           now = next
@@ -56,10 +56,10 @@ const parseSpec = (rules, spec) => {
 }
 
 const isValid = (rules, message) => {
-  const rootRule = rules.get(0),
-    messageChars = Array.from(message)
+  const rootRule = rules.get(0)
+  const messageChars = Array.from(message)
   const consumed = rootRule(rules, messageChars, 0)
-  return consumed == messageChars.length
+  return consumed === messageChars.length
 }
 
 const parse = (input) => {

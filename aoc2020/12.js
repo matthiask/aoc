@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("12.txt", { encoding: "utf-8" })
 
 const test = `\
@@ -21,7 +21,7 @@ const directions = ["N", "E", "S", "W"]
 const simulate = (ship, instructions) => {
   return instructions.reduce((ship, { mode, value }) => {
     // console.debug(ship)
-    if (mode == "F") {
+    if (mode === "F") {
       mode = ship.direction
     }
     switch (mode) {
@@ -69,7 +69,7 @@ const rotate = (waypoint, degrees) => {
 const simulate2 = (instructions) => {
   const ship = { east: 0, north: 0 }
   let waypoint = { east: 10, north: 1 }
-  for (let { mode, value } of instructions) {
+  for (const { mode, value } of instructions) {
     switch (mode) {
       case "N":
         waypoint.north += value

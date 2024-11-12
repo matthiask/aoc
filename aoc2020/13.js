@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("13.txt", { encoding: "utf-8" })
 
 const test = `\
@@ -8,11 +8,11 @@ const test = `\
 
 const parse = (input) => {
   const lines = input.split("\n").filter(Boolean)
-  const earliest = Number(lines[0]),
-    busLines = lines[1]
-      .split(",")
-      .filter((bus) => bus != "x")
-      .map(Number)
+  const earliest = Number(lines[0])
+  const busLines = lines[1]
+    .split(",")
+    .filter((bus) => bus !== "x")
+    .map(Number)
   return { earliest, busLines }
 }
 
@@ -36,7 +36,7 @@ part1("part1", input)
 const parseDepartureRules = (input) => {
   return input
     .split(",")
-    .map((bus, offset) => (bus == "x" ? null : [Number(bus), offset]))
+    .map((bus, offset) => (bus === "x" ? null : [Number(bus), offset]))
     .filter(Boolean)
 }
 
@@ -50,7 +50,7 @@ const part2 = (log, input) => {
   let rule = 1
   let prevmatch = 0
 
-  for (; rule < rules.length; ) {
+  while (rule < rules.length) {
     time += step
     if ((time + rules[rule][1]) % rules[rule][0] === 0) {
       if (!prevmatch) {

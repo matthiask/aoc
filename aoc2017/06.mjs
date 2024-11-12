@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 import { numbers } from "./utils.mjs"
 const input = numbers(readFileSync("06.txt", { encoding: "utf-8" }))
 

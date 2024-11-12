@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 
 const input = readFileSync("06.txt", { encoding: "utf-8" })
 

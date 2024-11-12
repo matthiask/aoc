@@ -45,8 +45,8 @@ const checksum = (grid) => {
 const evenlyDividablePairsQuotient = (line) => {
   for (let i = 0; i < line.length; ++i) {
     for (let j = i + 1; j < line.length; j++) {
-      const a = line[i],
-        b = line[j]
+      const a = line[i]
+      const b = line[j]
       let q = a / b
       if (Math.floor(q) === q) return q
       q = b / a

@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("20.txt", { encoding: "utf-8" })
 
 const test = `
@@ -113,7 +113,7 @@ Tile 3079:
 
 const reverseString = (s) => [...s].reverse().join("")
 const edgeId = (edge) =>
-  parseInt(edge.replace(/#/g, "1").replace(/\./g, "0"), 2)
+  Number.parseInt(edge.replace(/#/g, "1").replace(/\./g, "0"), 2)
 
 const parseTile = (tile) => {
   let [id, ...lines] = tile.split("\n")
@@ -144,13 +144,13 @@ const parse = (input) => {
   const tiles = input.trim().split("\n\n").map(parseTile)
   return {
     tiles,
-    dimensions: Math.pow(tiles.length, 0.5),
+    dimensions: tiles.length ** 0.5,
   }
 }
 
 const countOccurrences = (iterable) => {
   const counts = new Map()
-  for (let value of iterable) {
+  for (const value of iterable) {
     counts.set(value, 1 + (counts.get(value) || 0))
   }
   return counts
@@ -158,7 +158,7 @@ const countOccurrences = (iterable) => {
 
 const groupBy = (iterable) => {
   const groups = new Map()
-  for (let [value, group] of iterable) {
+  for (const [value, group] of iterable) {
     if (!groups.has(group)) groups.set(group, [])
     groups.get(group).push(value)
   }
@@ -168,10 +168,10 @@ const groupBy = (iterable) => {
 // https://stackoverflow.com/a/44012184
 function* cartesian(head, ...tail) {
   const remainder = tail.length > 0 ? cartesian(...tail) : [[]]
-  for (let r of remainder) for (let h of head) yield [h, ...r]
+  for (const r of remainder) for (const h of head) yield [h, ...r]
 }
 
-const part1Old = (log, input) => {
+const _part1Old = (log, input) => {
   const puzzle = parse(input)
   console.debug(puzzle)
   console.debug(
@@ -191,7 +191,7 @@ const part1Old = (log, input) => {
 
   let outsideEdgeIds
 
-  for (let edges of cartesian(
+  for (const edges of cartesian(
     ...puzzle.tiles.map((tile) => [tile.cw, tile.ccw]),
   )) {
     // console.log(edges)
@@ -228,13 +228,14 @@ const part1Old = (log, input) => {
 const rotatedTile = (tile, rotation) => {
   if (rotation < 0) {
     throw Error()
-  } else if (rotation < 4) {
-    return tile.cw.map((_id, idx, array) => array[(idx + 4 - rotation) % 4])
-  } else if (rotation < 8) {
-    return tile.ccw.map((_id, idx, array) => array[(idx + 8 - rotation) % 4])
-  } else {
-    throw Error()
   }
+  if (rotation < 4) {
+    return tile.cw.map((_id, idx, array) => array[(idx + 4 - rotation) % 4])
+  }
+  if (rotation < 8) {
+    return tile.ccw.map((_id, idx, array) => array[(idx + 8 - rotation) % 4])
+  }
+  throw Error()
 }
 
 function range(start, end) {
@@ -267,7 +268,7 @@ const findPlaces = (puzzle) => {
       return
     }
 
-    for (let idx of unplacedIndexes) {
+    for (const idx of unplacedIndexes) {
       for (let rotation = 0; rotation < 8; ++rotation) {
         const edges = rotatedTile(puzzle.tiles[idx], rotation)
 
@@ -281,7 +282,7 @@ const findPlaces = (puzzle) => {
           })
         ) {
           const newPlacement = [...placement, [idx, edges]]
-          const newUnplacedIndexes = unplacedIndexes.filter((id) => id != idx)
+          const newUnplacedIndexes = unplacedIndexes.filter((id) => id !== idx)
 
           if (newUnplacedIndexes.length < unplacedAmount) {
             unplacedAmount = newUnplacedIndexes.length
@@ -304,7 +305,7 @@ const findPlaces = (puzzle) => {
   return result
 }
 
-const part1Old2 = (log, inp) => {
+const _part1Old2 = (log, inp) => {
   const puzzle = parse(inp)
   const placement = findPlaces(puzzle)
 
@@ -320,7 +321,7 @@ const part1Old2 = (log, inp) => {
 }
 
 const intersects = (list1, list2) => {
-  for (let el of list1) {
+  for (const el of list1) {
     if (list2.includes(el)) {
       return true
     }
@@ -332,9 +333,9 @@ const part1 = (log, inp) => {
   const puzzle = parse(inp)
   const cornerIds = []
 
-  for (let tile of puzzle.tiles) {
+  for (const tile of puzzle.tiles) {
     let degree = 0
-    for (let other of puzzle.tiles) {
+    for (const other of puzzle.tiles) {
       if (tile.id === other.id) continue
       if (intersects(tile.allIds, other.allIds)) {
         if (++degree > 2) break

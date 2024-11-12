@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("24.txt", { encoding: "utf-8" })
 
 const test = `\
@@ -50,11 +50,11 @@ const getAdjacent = (coords) =>
 const getAdjacentAndSelf = (coords) => [coords, ...getAdjacent(coords)]
 
 const solve = (input) => {
-  let lines = parse(input)
+  const lines = parse(input)
   let black = new Set()
-  for (let line of lines) {
+  for (const line of lines) {
     let coords = [0, 0]
-    for (let match of line.matchAll(/(?:se|sw|ne|nw|e|w)/g)) {
+    for (const match of line.matchAll(/(?:se|sw|ne|nw|e|w)/g)) {
       coords = add(coords, adjacent[match[0]])
     }
     coords = coords.join(",")
@@ -68,7 +68,7 @@ const solve = (input) => {
   console.log("part1", black.size)
 
   for (let i = 0; i < 100; ++i) {
-    let check = Array.from(black).map(parseCoords).flatMap(getAdjacentAndSelf)
+    const check = Array.from(black).map(parseCoords).flatMap(getAdjacentAndSelf)
 
     // console.debug("check", check)
 

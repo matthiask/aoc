@@ -1,4 +1,4 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 const input = readFileSync("05.txt", { encoding: "utf-8" })
   .split("\n")
   .filter(Boolean)
@@ -7,7 +7,7 @@ const input = readFileSync("05.txt", { encoding: "utf-8" })
 // console.debug(input)
 
 const part1 = () => {
-  let program = [...input]
+  const program = [...input]
   let ip = 0
   for (let i = 1; ; ++i) {
     ip += program[ip]++
@@ -19,10 +19,10 @@ const part1 = () => {
 }
 
 const part2 = () => {
-  let program = [...input]
+  const program = [...input]
   let ip = 0
   for (let i = 1; ; ++i) {
-    let o = program[ip]
+    const o = program[ip]
     if (o >= 3) {
       --program[ip]
     } else {

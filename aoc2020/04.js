@@ -1192,7 +1192,8 @@ console.log(
         const height = Number(passport.hgt.replace(/cm$/, ""))
         // console.log(passport.hgt, { height })
         return 150 <= height && height <= 193
-      } else if (passport.hgt.endsWith("in")) {
+      }
+      if (passport.hgt.endsWith("in")) {
         const height = Number(passport.hgt.replace(/in$/, ""))
         // console.log(passport.hgt, { height })
         return 59 <= height && height <= 76

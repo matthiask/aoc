@@ -1,10 +1,11 @@
 """
-       N
-      +j
- W -1  0 +1 E
-      -j
-       S
+      N
+     +j
+W -1  0 +1 E
+     -j
+      S
 """
+
 from collections import defaultdict, deque
 from itertools import chain
 

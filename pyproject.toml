@@ -1,7 +1,13 @@
 [tool.ruff]
+target-version = "py312"
+
+fix = true
+show-fixes = true
 extend-select = [
   # pyflakes, pycodestyle
-  "F", "E", "W",
+  "F",
+  "E",
+  "W",
   # mmcabe
   "C90",
   # isort
@@ -39,13 +45,6 @@ extend-ignore = [
   # No line length errors
   "E501",
 ]
-fix = true
-show-fixes = true
-target-version = "py39"
-
-[tool.ruff.isort]
-combine-as-imports = true
-lines-after-imports = 2
-
-[tool.ruff.mccabe]
-max-complexity = 15
+mccabe.max-complexity = 15
+isort.combine-as-imports = true
+isort.lines-after-imports = 2
